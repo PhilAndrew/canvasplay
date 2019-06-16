@@ -1,0 +1,24 @@
+.canv-div {
+  width: 100px;
+  height: 100px;
+  border: solid #2EE59D;
+}
+
+.canv-div canvas {
+  width: unset !important;
+  height: unset !important;
+}
+
+h5 {
+  font-size: 16px;
+  margin: 0;
+  width: 100px;
+  padding: 3px;
+  text-align: center;
+  background: #97cab547;
+  margin-bottom: 0;
+}
+
+.canv-comp {
+  margin: 15px;
+}
