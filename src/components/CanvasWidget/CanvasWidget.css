@@ -1,6 +1,6 @@
 .canv-div {
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 157px;
   border: solid #2EE59D;
 }
 
@@ -12,7 +12,7 @@
 h5 {
   font-size: 16px;
   margin: 0;
-  width: 100px;
+  width: 90px;
   padding: 3px;
   text-align: center;
   background: #97cab547;

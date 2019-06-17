@@ -7,14 +7,14 @@ interface ITodoModel {
 }
 
 export const initialState: ITodoModel = {
-  source_canvas: {},
+  source_canvas: null,
   imageFlows: []
 };
 
 export const canvasReducer = (state: ITodoModel = initialState, action: MyTypes.RootAction) => {
   switch (action.type) {
     case actionTypes.SET_RANDOM_IMAGE_FLOWS: {
-      console.log('action.payload: ', action.payload);
+      // console.log('action.payload: ', action.payload);
       return {
         ...state,
         imageFlows: action.payload,

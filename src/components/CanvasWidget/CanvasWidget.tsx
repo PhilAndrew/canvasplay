@@ -2,9 +2,11 @@ import Canvas from 'react-canvas-wrapper';
 import React from 'react';
 import './CanvasWidget.css';
 
+import * as sourceImg from '../../assets/test.jpg';
+
 interface CanvasWidgetProps {
-  type: string;
   imageFlow: any;
+  isTopComment: any;
 }
 
 class CanvasWidget extends React.Component<CanvasWidgetProps> {
@@ -16,59 +18,62 @@ class CanvasWidget extends React.Component<CanvasWidgetProps> {
 
     draw = (canvas: any) => {
         const node = canvas;
-        const context = node.getContext('2d');
+        const targetCanvasContext = node.getContext('2d');
 
-        const {imageFlow, type} = this.props;
+        const {imageFlow} = this.props;
 
-        if (!context) {
+        if (!targetCanvasContext) {
             return;
         }
 
         const pixelRatio = window.devicePixelRatio || 1;
-        console.log(pixelRatio);
-        const width = 100 * pixelRatio;
-        const height = 100 * pixelRatio;
-        const backgroundColor = 'blue';
+        const width = 90 * pixelRatio;
+        const height = 157 * pixelRatio;
 
-        context.canvas.width = width;
-        context.canvas.height = height;
+        targetCanvasContext.canvas.width = width;
+        targetCanvasContext.canvas.height = height;
 
-        context.clearRect(0, 0, width, height);
-        context.beginPath();
-        if (type === 'target') {
-            imageFlow.target.map((rect: any) => {
-                context.fillRect(rect.x, rect.y, rect.width, rect.height);
-                context.fillStyle = rect.color;
+        const sourceCanvas: any = document.getElementById('source-canvas');
+        const sourceCanvasContext = sourceCanvas.getContext('2d');
+
+        let sourceImgHandler = new Image();
+        sourceImgHandler.onload = function () {
+            sourceCanvasContext.drawImage(sourceImgHandler, 0, 0);
+
+            imageFlow.target.map((rect: any, i: any) => {
+                targetCanvasContext.drawImage(sourceCanvas, 
+                    imageFlow.source[i].x, 
+                    imageFlow.source[i].y, 
+                    imageFlow.source[i].width, 
+                    imageFlow.source[i].height,
+                    rect.x,
+                    rect.y,
+                    rect.width,
+                    rect.height);
+            });
+
+            // drawing position
+            imageFlow.source.map((item) => {
+                sourceCanvasContext.strokeRect(item.x, item.y, item.width, item.height);
+                sourceCanvasContext.strokeStyle = 'red';
             })
-        } else {
-            imageFlow.map((rect: any) => {
-                context.fillRect(rect.x, rect.y, rect.width, rect.height);
-                context.fillStyle = rect.color;
-            })
-            
         }
-    }
-
-    getId = () => {
-        const {imageFlow} = this.props;
-        return imageFlow ? imageFlow.type === 'target' ? imageFlow.target_canvas_id : imageFlow.source_canvas_id : 'noone'
+        sourceImgHandler.src = sourceImg;
     }
 
     render = () => {
-        const {type, imageFlow} = this.props;
-        const id = type === 'source' ? 'source-canvid' : imageFlow.target_canvas_id;
-        console.log('imgg: ', imageFlow);
+        const {imageFlow, isTopComment} = this.props;
         return (
             <div className="canv-comp">
-                <h5 className="type">
-                    {
-                        type === 'source'
-                            ? 'Source' 
-                            : 'Target' + '( MappingID: ' + imageFlow.flow_mapping_id + ')'
-                    }
-                </h5>
+                { 
+                    isTopComment
+                        ?   <h5 className="type">
+                                Target ( MappingID: {imageFlow.flow_mapping_id} )
+                            </h5>
+                        : null
+                }
                 <div className="canv-div">
-                    <Canvas id={id} draw={this.draw} />
+                    <Canvas draw={this.draw} />
                 </div>
             </div>
         )
