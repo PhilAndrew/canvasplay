@@ -4,6 +4,10 @@
   border: solid #2EE59D;
 }
 
+.no-border {
+  border: none !important;
+}
+
 .canv-div canvas {
   width: unset !important;
   height: unset !important;

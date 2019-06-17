@@ -6,17 +6,24 @@ import { actionTypes } from "../actions";
 import Canvas from 'react-canvas-wrapper';
 import CanvasWidget from "../components/CanvasWidget/CanvasWidget";
 
-import { List } from "react-virtualized";
+import { List, AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column } from "react-virtualized";
+import 'react-virtualized/styles.css';
 
 import './AppContainer.css';
 
 import * as sourceImg from '../assets/test.jpg';
+
+const cache = new CellMeasurerCache({
+  fixedWidth: true,
+  defaultHeight: 157
+})
 
 interface AppContainerState {
   canvases: string;
   list: any[];
   drawSource: boolean;
   clipInfosFromSource: any[];
+  copiedFlow: any[];
 }
 
 interface AppContainerProps {
@@ -31,13 +38,8 @@ class AppContainer extends React.Component<AppContainerProps> {
     super(props);
     this.state = {
       canvases: "",
-      list: [
-        {name: 'tom', age: 30},
-        {name: 'jerry', age: 20},
-        {name: 'king', age: 14},
-        {name: 'bsan', age: 17},
-      ],
       drawSource: false,
+      copiedFlow: [],
       clipInfosFromSource: [{
         x: 0,
         y: 0,
@@ -62,7 +64,7 @@ class AppContainer extends React.Component<AppContainerProps> {
     const {clipInfosFromSource} = this.state;
 
     let imageFlows = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
       let target: any = [];
       clipInfosFromSource.map((item: any) => {
         let xrand = Math.floor(Math.random() * 90);
@@ -120,37 +122,140 @@ class AppContainer extends React.Component<AppContainerProps> {
     this.props.setSourceCanvas('ready to copy');
   }
 
-  renderRow = ({ index, key, style }) => {
-    return (
-      <div key={key} style={style} className="row">
-        <div className="image">
-          ddd
-        </div>
-        <div className="content">
-          <div>{this.state.list[index].name}</div>
-          <div>{this.state.list[index].age}</div>
-        </div>
-      </div>
-    );
+  copyImageFlow = (flowMappingId) => {
+    console.log('flowmpaaing: ', flowMappingId);
+
+    let { copiedFlow } = this.state;
+    copiedFlow.push(flowMappingId);
+    this.setState({ copiedFlow });
   }
 
+  sourceColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    return (
+      <CellMeasurer
+        cache={cache}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+        <div
+          style={{
+            whiteSpace: 'normal',
+          }}>
+          <Canvas id="source-canvas" ref="source-canvas" width={90} height={157} draw={this.drawSourceCanvas} />
+        </div>
+      </CellMeasurer>
+    );
+  };
+
+  targetColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    const {imageFlows} = this.props;
+    const {copiedFlow} = this.state;
+
+    return (
+      <CellMeasurer
+        cache={cache}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+        <div
+          style={{
+            whiteSpace: 'normal',
+          }}>
+          {
+            copiedFlow.includes(imageFlows[rowIndex].flow_mapping_id)
+            ? <CanvasWidget key={rowIndex+'1a'} isTopComment={false} isBorderNeeded={false} imageFlow={imageFlows[rowIndex]} />
+            : null
+          }
+        </div>
+      </CellMeasurer>
+    );
+  };
+
+  mappingFlowIdColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    const {imageFlows} = this.props;
+
+    return (
+      <CellMeasurer
+        cache={cache}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+        <div
+          style={{
+            whiteSpace: 'normal',
+          }}>
+          <a className="copy-btn" onClick={() => this.copyImageFlow(imageFlows[rowIndex].flow_mapping_id)}>
+            {imageFlows[rowIndex].flow_mapping_id}
+          </a>
+        </div>
+      </CellMeasurer>
+    );
+  };
+
+  sourcePositionColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    const {imageFlows} = this.props;
+
+    return (
+      <CellMeasurer
+        cache={cache}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+        <div
+          style={{
+            whiteSpace: 'normal',
+          }}>
+          {
+            imageFlows[rowIndex].source.map((item, idx) => {
+              return (
+                <div>
+                  <span>x: {item.x} y: {item.y}</span>
+                  <br />
+                  <span>width: {item.width} height: {item.height}</span>
+                </div>
+              )
+            })
+          }
+        </div>
+      </CellMeasurer>
+    );
+  };
+
+  targetPositionColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    const {imageFlows} = this.props;
+
+    return (
+      <CellMeasurer
+        cache={cache}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+        <div
+          style={{
+            whiteSpace: 'normal',
+          }}>
+          {
+            imageFlows[rowIndex].target.map((item, idx) => {
+              return (
+                <div>
+                  <span>x: {item.x} y: {item.y}</span>
+                  <br />
+                  <span>width: {item.width} height: {item.height}</span>
+                </div>
+              )
+            })
+          }
+        </div>
+      </CellMeasurer>
+    );
+  };
+
   render() {
-    let targetsJSX: JSX.Element[] | JSX.Element;
-    const {source_canvas} = this.props;
+    const {source_canvas, imageFlows} = this.props;
     const {drawSource} = this.state;
 
-
-    if (!this.props.imageFlows.length) {
-      targetsJSX = <p>No Image Flows</p>;
-    } else {
-      targetsJSX = this.props.imageFlows.map((item, idx) => {
-        return (
-          <CanvasWidget key={idx+'1'} isTopComment={true} imageFlow={item} />
-        );
-      });
-    }
-
-    const listHeight = 600, rowHeight = 50, rowWidth = 800;
+    const listHeight = 600;
+    const rowWidth = 1100;
 
     return (
       <div>
@@ -180,17 +285,53 @@ class AppContainer extends React.Component<AppContainerProps> {
             : null
           }
         </div>
-        
-        <div className="target-section">
-          {targetsJSX}
-        </div>
-        <div className="list-section">
-          <List
-            width={rowWidth}
-            height={listHeight}
-            rowHeight={rowHeight}
-            rowRenderer={this.renderRow}
-            rowCount={this.state.list.length} />
+        <div>
+          <AutoSizer>
+            {
+              () => {
+              return <Table
+                        width={rowWidth}
+                        height={listHeight}
+                        deferredMeasurementCache={cache}
+                        headerHeight={20}
+                        rowHeight={cache.rowHeight}
+                        rowCount={imageFlows.length}
+                        rowGetter={({ index }) => imageFlows[index]}
+                      >
+                        <Column
+                          label='Source Canvas'
+                          dataKey='source_canvas'
+                          width={200}
+                          cellRenderer={this.sourceColumnCellRenderer}
+                        />
+                        <Column
+                          width={200}
+                          label='Target Canvas'
+                          dataKey='target_canvas'
+                          cellRenderer={this.targetColumnCellRenderer}
+                        />
+                        <Column
+                          width={200}
+                          label='Flow Mapping Id'
+                          dataKey='flow_mapping_id'
+                          cellRenderer={this.mappingFlowIdColumnCellRenderer}
+                        />
+                        <Column
+                          width={200}
+                          label='Source Data'
+                          dataKey='source'
+                          cellRenderer={this.sourcePositionColumnCellRenderer}
+                        />
+                        <Column
+                          width={200}
+                          label='Target Data'
+                          dataKey='target'
+                          cellRenderer={this.targetPositionColumnCellRenderer}
+                        />
+                      </Table>
+              }
+            }
+          </AutoSizer>
         </div>
       </div>
     );

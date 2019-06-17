@@ -7,6 +7,7 @@ import * as sourceImg from '../../assets/test.jpg';
 interface CanvasWidgetProps {
   imageFlow: any;
   isTopComment: any;
+  isBorderNeeded: any;
 }
 
 class CanvasWidget extends React.Component<CanvasWidgetProps> {
@@ -62,7 +63,7 @@ class CanvasWidget extends React.Component<CanvasWidgetProps> {
     }
 
     render = () => {
-        const {imageFlow, isTopComment} = this.props;
+        const {imageFlow, isTopComment, isBorderNeeded} = this.props;
         return (
             <div className="canv-comp">
                 { 
@@ -72,8 +73,8 @@ class CanvasWidget extends React.Component<CanvasWidgetProps> {
                             </h5>
                         : null
                 }
-                <div className="canv-div">
-                    <Canvas draw={this.draw} />
+                <div className={isBorderNeeded ? 'canv-div' : 'canv-div no-border'}>
+                    <Canvas id={imageFlow.flow_mapping_id} draw={this.draw} />
                 </div>
             </div>
         )
