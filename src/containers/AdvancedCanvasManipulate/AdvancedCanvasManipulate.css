@@ -91,6 +91,7 @@ h5 {
   height: 100%;
   min-width: 0;
   justify-content: center;
+  overflow: auto !important;
 }
 .ReactVirtualized__Table__rowColumn:last-child {
   border-right: none;

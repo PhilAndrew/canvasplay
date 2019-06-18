@@ -53,11 +53,11 @@ class CanvasWidget extends React.Component<CanvasWidgetProps> {
                     rect.height);
             });
 
-            // drawing position
+            /* // drawing position
             imageFlow.source.map((item) => {
                 sourceCanvasContext.strokeRect(item.x, item.y, item.width, item.height);
                 sourceCanvasContext.strokeStyle = 'red';
-            })
+            }) */
         }
         sourceImgHandler.src = sourceImg;
     }

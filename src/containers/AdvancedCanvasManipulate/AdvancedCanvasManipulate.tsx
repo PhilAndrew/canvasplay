@@ -2,70 +2,68 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import * as MyTypes from "MyTypes";
-import { actionTypes } from "../actions";
+import { actionTypes } from "../../actions";
 import Canvas from 'react-canvas-wrapper';
-import CanvasWidget from "../components/CanvasWidget/CanvasWidget";
+import CanvasWidget from "../../components/CanvasWidget/CanvasWidget";
 
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column } from "react-virtualized";
 import 'react-virtualized/styles.css';
 
-import './AppContainer.css';
+import './AdvancedCanvasManipulate.css';
 
-import * as sourceImg from '../assets/test.jpg';
+import * as sourceImg from '../../assets/test.jpg';
 
 const cache = new CellMeasurerCache({
   fixedWidth: true,
   defaultHeight: 157
 })
 
-interface AppContainerState {
+interface AdvancedCanvasManipulateState {
   canvases: string;
-  list: any[];
   drawSource: boolean;
-  clipInfosFromSource: any[];
 }
 
-interface AppContainerProps {
+interface AdvancedCanvasManipulateProps {
   source_canvas: any;
   imageFlows: any[];
   setSourceCanvas: (sourceCanvas: any) => object;
   setRandomImageFlows: (imageFlows: any) => object;
 }
 
-class AppContainer extends React.Component<AppContainerProps> {
-  constructor(props: AppContainerProps) {
+class AdvancedCanvasManipulate extends React.Component<AdvancedCanvasManipulateProps> {
+  
+  constructor(props: AdvancedCanvasManipulateProps) {
     super(props);
     this.state = {
       canvases: "",
       drawSource: false,
-      clipInfosFromSource: [{
-        x: 0,
-        y: 0,
-        width: 20,
-        height: 20
-      }, {
-        x: 20,
-        y: 40,
-        width: 20,
-        height: 30
-      }, {
-        x: 50,
-        y: 10,
-        width: 10,
-        height: 40
-      }]
     };
   }
 
   generateRandomImageFlows = () => {
     const {source_canvas} = this.props;
-    const {clipInfosFromSource} = this.state;
 
     let imageFlows = [];
     for (let i = 0; i < 100; i++) {
+      let source: any = [];
       let target: any = [];
       let sub_flow_mapping_id = [];
-      clipInfosFromSource.map((item: any) => {
+
+      const randomNumberOfSourceData = Math.floor(Math.random() * 100) % 10 + 1; // max 10 number of sub flows
+      for (let i = 0; i < randomNumberOfSourceData; i++) {
+        let randWidth = Math.floor(Math.random() * 90) % 50 + 1; // max 50
+        let randHeight = Math.floor(Math.random() * 157) % 50 + 1; // max 50
+        let randX = Math.floor(Math.random() * 90) % (90 - randWidth) + 1;
+        let randY = Math.floor(Math.random() * 157) % (157 - randHeight) + 1;
+        source.push({
+          x: randX,
+          y: randY,
+          width: randWidth,
+          height: randHeight
+        })
+      }
+
+      source.map((item: any) => {
         let xrand = Math.floor(Math.random() * 90);
         let yrand = Math.floor(Math.random() * 157);
         target.push({
@@ -82,7 +80,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           flow_mapping_id: 'image-flow' + i,
           source_canvas_id: source_canvas.id,
           target_canvas_id: 'canvas-t' + i,
-          source: clipInfosFromSource,
+          source,
           target,
           real_source: [], // real copied imgs data
           real_target: [], // real copied imgs data
@@ -109,14 +107,19 @@ class AppContainer extends React.Component<AppContainerProps> {
 
     let sourceImgHandler = new Image();
     let self = this;
+    const {drawSource} = this.state;
     sourceImgHandler.onload = function () {
-      context.drawImage(sourceImgHandler, 0, 0);
 
-      const {clipInfosFromSource} = self.state;
+      if (drawSource) {
+        context.drawImage(sourceImgHandler, 0, 0);
+      }
+      
+
+      /* const {clipInfosFromSource} = self.state;
       clipInfosFromSource.map((item) => {
         context.strokeRect(item.x, item.y, item.width, item.height);
         context.strokeStyle = 'red';
-      })
+      }) */
     }
     sourceImgHandler.src = sourceImg;
   }
@@ -212,7 +215,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           {
             imageFlows[rowIndex].sub_flow_mapping_id.map((item, mapIndex) => {
               return (
-                <div>
+                <div key={rowIndex + 'sub_flow_mapping' + mapIndex}>
                   <a className="copy-btn" onClick={() => this.copyImageFlow(mapIndex, imageFlows[rowIndex])}>
                     {item}
                   </a>
@@ -241,7 +244,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           {
             imageFlows[rowIndex].source.map((item, idx) => {
               return (
-                <div key={'sourcedata' + rowIndex}>
+                <div key={idx + 'sourcedata' + rowIndex}>
                   <span>x: {item.x} y: {item.y}</span>
                   <br />
                   <span>width: {item.width} height: {item.height}</span>
@@ -270,7 +273,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           {
             imageFlows[rowIndex].target.map((item, idx) => {
               return (
-                <div key={'targetdata' + rowIndex}>
+                <div key={idx + 'targetdata' + rowIndex}>
                   <span>x: {item.x} y: {item.y}</span>
                   <br />
                   <span>width: {item.width} height: {item.height}</span>
@@ -291,7 +294,10 @@ class AppContainer extends React.Component<AppContainerProps> {
     const rowWidth = 1100;
 
     return (
-      <div>
+      <div className="page-body">
+        <h4 className="page-title">
+          Advanced Canvas Manipulate
+        </h4>
         <div className="action-section">
           <button className="draw-src-canvas" onClick={this.startDrawSourceCanvas}>
             Draw Source Canvas
@@ -305,18 +311,14 @@ class AppContainer extends React.Component<AppContainerProps> {
           }
         </div>
         <div className="source-section">
-          {
-            drawSource
-            ? <div className="canv-comp">
-                <h5 id="type" className="type">
-                  Source Canvas
-                </h5>
-                <div className="canv-div">
-                  <Canvas id="source-canvas" ref="source-canvas" width={90} height={157} draw={this.drawSourceCanvas} />
-                </div>
-              </div>
-            : null
-          }
+          <div className="canv-comp">
+            <h5 id="type" className="type">
+              Source Canvas
+            </h5>
+            <div className="canv-div">
+              <Canvas id="source-canvas" ref="source-canvas" width={90} height={157} draw={this.drawSourceCanvas} />
+            </div>
+          </div>
         </div>
         <div>
           <AutoSizer>
@@ -386,4 +388,4 @@ const MapDispatchToProps = (dispatch: Dispatch<MyTypes.RootAction>) => ({
 export default connect(
   MapStateToProps,
   MapDispatchToProps
-)(AppContainer);
+)(AdvancedCanvasManipulate);

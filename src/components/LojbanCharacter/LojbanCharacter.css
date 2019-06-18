@@ -1,0 +1,10 @@
+.lobjan-div {
+  border: solid #2EE59D;
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.lobjan-div canvas {
+  width: unset !important;
+  height: unset !important;
+}
