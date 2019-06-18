@@ -100,5 +100,9 @@ h5 {
   cursor: pointer;
   color: #2EE59D;
   font-weight: bold;
-  
+}
+
+.empty-target-canvas {
+  height: 175px;
+  width: 10px;
 }

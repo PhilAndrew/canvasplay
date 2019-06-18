@@ -23,7 +23,6 @@ interface AppContainerState {
   list: any[];
   drawSource: boolean;
   clipInfosFromSource: any[];
-  copiedFlow: any[];
 }
 
 interface AppContainerProps {
@@ -39,7 +38,6 @@ class AppContainer extends React.Component<AppContainerProps> {
     this.state = {
       canvases: "",
       drawSource: false,
-      copiedFlow: [],
       clipInfosFromSource: [{
         x: 0,
         y: 0,
@@ -55,7 +53,7 @@ class AppContainer extends React.Component<AppContainerProps> {
         y: 10,
         width: 10,
         height: 40
-      }] 
+      }]
     };
   }
 
@@ -66,6 +64,7 @@ class AppContainer extends React.Component<AppContainerProps> {
     let imageFlows = [];
     for (let i = 0; i < 100; i++) {
       let target: any = [];
+      let sub_flow_mapping_id = [];
       clipInfosFromSource.map((item: any) => {
         let xrand = Math.floor(Math.random() * 90);
         let yrand = Math.floor(Math.random() * 157);
@@ -75,6 +74,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           width: item.width,
           height: item.height
         })
+        sub_flow_mapping_id.push("sub_flow_mapping_" + Math.floor(Math.random() * 12345));
       });
 
       imageFlows.push(
@@ -83,7 +83,11 @@ class AppContainer extends React.Component<AppContainerProps> {
           source_canvas_id: source_canvas.id,
           target_canvas_id: 'canvas-t' + i,
           source: clipInfosFromSource,
-          target
+          target,
+          real_source: [], // real copied imgs data
+          real_target: [], // real copied imgs data
+          real_sub_flow_mapping_id: [], // real copied img flows mapping ids.
+          sub_flow_mapping_id // each source->target ids
         }
       );
     }
@@ -122,34 +126,38 @@ class AppContainer extends React.Component<AppContainerProps> {
     this.props.setSourceCanvas('ready to copy');
   }
 
-  copyImageFlow = (flowMappingId) => {
-    console.log('flowmpaaing: ', flowMappingId);
+  copyAllImageFlow = (focusedImageFlow) => {
+    const {imageFlows} = this.props;
+    let updatedImageFlows = JSON.parse(JSON.stringify(imageFlows));
 
-    let { copiedFlow } = this.state;
-    copiedFlow.push(flowMappingId);
-    this.setState({ copiedFlow });
+    imageFlows.map((o, index) => {
+      if (o.flow_mapping_id === focusedImageFlow.flow_mapping_id) {
+        updatedImageFlows[index].real_source = imageFlows[index].source;
+        updatedImageFlows[index].real_target = imageFlows[index].target;
+        updatedImageFlows[index].real_sub_flow_mapping_id = imageFlows[index].sub_flow_mapping_id;
+      }
+    }) 
+
+    this.props.setRandomImageFlows(updatedImageFlows);
   }
 
-  sourceColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
-    return (
-      <CellMeasurer
-        cache={cache}
-        key={dataKey}
-        parent={parent}
-        rowIndex={rowIndex}>
-        <div
-          style={{
-            whiteSpace: 'normal',
-          }}>
-          <Canvas id="source-canvas" ref="source-canvas" width={90} height={157} draw={this.drawSourceCanvas} />
-        </div>
-      </CellMeasurer>
-    );
-  };
+  copyImageFlow = (mapIndex, focusedImageFlow) => {
+    const {imageFlows} = this.props;
+    let updatedImageFlows = JSON.parse(JSON.stringify(imageFlows));
+
+    imageFlows.map((o, index) => {
+      if (!o.real_sub_flow_mapping_id.includes(focusedImageFlow.sub_flow_mapping_id[mapIndex]) && o.flow_mapping_id === focusedImageFlow.flow_mapping_id) {
+        updatedImageFlows[index].real_source.push(o.source[mapIndex]);
+        updatedImageFlows[index].real_target.push(o.target[mapIndex]);
+        updatedImageFlows[index].real_sub_flow_mapping_id.push(o.sub_flow_mapping_id[mapIndex]);
+      }
+    }) 
+
+    this.props.setRandomImageFlows(updatedImageFlows);
+  }
 
   targetColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
     const {imageFlows} = this.props;
-    const {copiedFlow} = this.state;
 
     return (
       <CellMeasurer
@@ -161,11 +169,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           style={{
             whiteSpace: 'normal',
           }}>
-          {
-            copiedFlow.includes(imageFlows[rowIndex].flow_mapping_id)
-            ? <CanvasWidget key={rowIndex+'1a'} isTopComment={false} isBorderNeeded={false} imageFlow={imageFlows[rowIndex]} />
-            : null
-          }
+          <CanvasWidget key={rowIndex+'1a'} isTopComment={false} isBorderNeeded={false} imageFlow={imageFlows[rowIndex]} />
         </div>
       </CellMeasurer>
     );
@@ -184,9 +188,38 @@ class AppContainer extends React.Component<AppContainerProps> {
           style={{
             whiteSpace: 'normal',
           }}>
-          <a className="copy-btn" onClick={() => this.copyImageFlow(imageFlows[rowIndex].flow_mapping_id)}>
+          <a className="copy-btn" onClick={() => this.copyAllImageFlow(imageFlows[rowIndex])}>
             {imageFlows[rowIndex].flow_mapping_id}
           </a>
+        </div>
+      </CellMeasurer>
+    );
+  };
+
+  subMappingFlowColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    const {imageFlows} = this.props;
+    
+    return (
+      <CellMeasurer
+        cache={cache}
+        key={dataKey}
+        parent={parent}
+        rowIndex={rowIndex}>
+        <div
+          style={{
+            whiteSpace: 'normal',
+          }}>
+          {
+            imageFlows[rowIndex].sub_flow_mapping_id.map((item, mapIndex) => {
+              return (
+                <div>
+                  <a className="copy-btn" onClick={() => this.copyImageFlow(mapIndex, imageFlows[rowIndex])}>
+                    {item}
+                  </a>
+                </div>
+              )
+            })
+          }
         </div>
       </CellMeasurer>
     );
@@ -208,7 +241,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           {
             imageFlows[rowIndex].source.map((item, idx) => {
               return (
-                <div>
+                <div key={'sourcedata' + rowIndex}>
                   <span>x: {item.x} y: {item.y}</span>
                   <br />
                   <span>width: {item.width} height: {item.height}</span>
@@ -237,7 +270,7 @@ class AppContainer extends React.Component<AppContainerProps> {
           {
             imageFlows[rowIndex].target.map((item, idx) => {
               return (
-                <div>
+                <div key={'targetdata' + rowIndex}>
                   <span>x: {item.x} y: {item.y}</span>
                   <br />
                   <span>width: {item.width} height: {item.height}</span>
@@ -299,12 +332,6 @@ class AppContainer extends React.Component<AppContainerProps> {
                         rowGetter={({ index }) => imageFlows[index]}
                       >
                         <Column
-                          label='Source Canvas'
-                          dataKey='source_canvas'
-                          width={200}
-                          cellRenderer={this.sourceColumnCellRenderer}
-                        />
-                        <Column
                           width={200}
                           label='Target Canvas'
                           dataKey='target_canvas'
@@ -315,6 +342,12 @@ class AppContainer extends React.Component<AppContainerProps> {
                           label='Flow Mapping Id'
                           dataKey='flow_mapping_id'
                           cellRenderer={this.mappingFlowIdColumnCellRenderer}
+                        />
+                        <Column
+                          width={200}
+                          label='Sub Flow Mapping Id'
+                          dataKey='sub_flow_mapping_id'
+                          cellRenderer={this.subMappingFlowColumnCellRenderer}
                         />
                         <Column
                           width={200}

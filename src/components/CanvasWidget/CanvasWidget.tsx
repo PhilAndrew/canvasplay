@@ -41,12 +41,12 @@ class CanvasWidget extends React.Component<CanvasWidgetProps> {
         sourceImgHandler.onload = function () {
             sourceCanvasContext.drawImage(sourceImgHandler, 0, 0);
 
-            imageFlow.target.map((rect: any, i: any) => {
+            imageFlow.real_target.map((rect: any, i: any) => {
                 targetCanvasContext.drawImage(sourceCanvas, 
-                    imageFlow.source[i].x, 
-                    imageFlow.source[i].y, 
-                    imageFlow.source[i].width, 
-                    imageFlow.source[i].height,
+                    imageFlow.real_source[i].x, 
+                    imageFlow.real_source[i].y, 
+                    imageFlow.real_source[i].width, 
+                    imageFlow.real_source[i].height,
                     rect.x,
                     rect.y,
                     rect.width,
