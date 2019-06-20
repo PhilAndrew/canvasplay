@@ -16,35 +16,35 @@ class LojbanCharacter extends React.Component<LojbanCharacterProps> {
 
     characterToBinaryFiveBits = (c) => {
       // a b c d e f g i j k l m n o p r s t u v x y z
-      if (c=='a') return '00001';
-      if (c=='b') return '00010';
-      if (c=='c') return '00011';
-      if (c=='d') return '00100'; // 100
-      if (c=='e') return '00101';
-      if (c=='f') return '00110';
-      if (c=='g') return '00111';
+      if (c==='a') return '00001';
+      if (c==='b') return '00010';
+      if (c==='c') return '00011';
+      if (c==='d') return '00100'; // 100
+      if (c==='e') return '00101';
+      if (c==='f') return '00110';
+      if (c==='g') return '00111';
       // h is missing
-      if (c=='i') return '01000'; // 1000
-      if (c=='j') return '01001';
-      if (c=='k') return '01010';
-      if (c=='l') return '01011';
-      if (c=='m') return '01100';
-      if (c=='n') return '01101';
-      if (c=='o') return '01110';
-      if (c=='p') return '01111';
+      if (c==='i') return '01000'; // 1000
+      if (c==='j') return '01001';
+      if (c==='k') return '01010';
+      if (c==='l') return '01011';
+      if (c==='m') return '01100';
+      if (c==='n') return '01101';
+      if (c==='o') return '01110';
+      if (c==='p') return '01111';
       // q is missing
-      if (c=='r') return '10000'; // 10000
-      if (c=='s') return '10001';
-      if (c=='t') return '10010';
-      if (c=='u') return '10011';
-      if (c=='v') return '10100';
+      if (c==='r') return '10000'; // 10000
+      if (c==='s') return '10001';
+      if (c==='t') return '10010';
+      if (c==='u') return '10011';
+      if (c==='v') return '10100';
       // w is missing
-      if (c=='x') return '10101';
-      if (c=='y') return '10110';
-      if (c=='z') return '10111';
-      if (c==`'`) return '11000';
-      if (c=='.') return '11001';
-      if (c==',') return '11010';
+      if (c==='x') return '10101';
+      if (c==='y') return '10110';
+      if (c==='z') return '10111';
+      if (c===`'`) return '11000';
+      if (c==='.') return '11001';
+      if (c===',') return '11010';
       
       return '00000';
     }

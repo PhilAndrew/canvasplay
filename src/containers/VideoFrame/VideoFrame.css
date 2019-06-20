@@ -1,0 +1,39 @@
+.page-title {
+  font-size: 24px;
+}
+
+.frame-cell-canv-div {
+  width: 1024px;
+  height: 1024px;
+  border: solid #2EE59D;
+}
+
+.frame-cell-canv-div canvas {
+  width: unset !important;
+  height: unset !important;
+}
+
+.frame-cell-type {
+  font-size: 16px;
+  margin: 0;
+  width: 1024px;
+  padding: 3px;
+  text-align: center;
+  background: #97cab547;
+  margin-bottom: 0;
+}
+
+.frame-canv-comp {
+  margin: 15px;
+}
+
+.frame-container {
+  display: flex;
+  justify-content: center;
+}
+
+.vtemp {
+  visibility: hidden;
+  position: absolute;
+  left: 30px;
+}

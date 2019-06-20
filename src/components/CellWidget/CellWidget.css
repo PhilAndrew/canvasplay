@@ -1,0 +1,25 @@
+.cell-canv-div {
+  border: solid #2EE59D;
+}
+
+.no-border {
+  border: none !important;
+}
+
+.cell-canv-div canvas {
+  width: unset !important;
+  height: unset !important;
+}
+
+.cell-target-type {
+  font-size: 16px;
+  margin: 0;
+  padding: 3px;
+  text-align: center;
+  background: #97cab547;
+  margin-bottom: 0;
+}
+
+.canv-comp {
+  margin: 15px;
+}

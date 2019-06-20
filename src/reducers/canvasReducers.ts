@@ -7,6 +7,12 @@ interface ITodoModel {
   imageFlows: any;
   imageFlowsBasic: any;
   lojbanDatas: any;
+
+  source_canvas_cell: any;
+  cellTiles: any;
+
+  source_canvas_videoframes: any;
+  videoFrames: any;
 }
 
 export const initialState: ITodoModel = {
@@ -14,11 +20,45 @@ export const initialState: ITodoModel = {
   source_canvas_basic: null,
   imageFlows: [],
   imageFlowsBasic: [],
-  lojbanDatas: []
+  lojbanDatas: [],
+
+  source_canvas_cell: null,
+  cellTiles: [],
+
+  source_canvas_videoframes: null,
+  videoFrames: []
 };
 
 export const canvasReducer = (state: ITodoModel = initialState, action: MyTypes.RootAction) => {
   switch (action.type) {
+
+    case actionTypes.SET_SOURCE_CANVAS_CELL: {
+      return {
+        ...state,
+        source_canvas_cell: action.payload,
+      };
+    } 
+    case actionTypes.SET_RANDOM_CELL_TILES: {
+      return {
+        ...state,
+        cellTiles: action.payload,
+      };
+    }
+
+    case actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME: {
+      return {
+        ...state,
+        source_canvas_videoframes: action.payload,
+      };
+    } 
+    case actionTypes.SET_RANDOM_VIDEOFRAME: {
+      // console.log('actio: ', action.payload);
+      return {
+        ...state,
+        videoFrames: action.payload,
+      };
+    }
+    
     case actionTypes.SET_LOJBAN_DATAS: {
       return {
         ...state,
