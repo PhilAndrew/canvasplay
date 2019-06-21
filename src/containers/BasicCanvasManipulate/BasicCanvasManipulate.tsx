@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactDOM from 'react-dom';
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import * as MyTypes from "MyTypes";
@@ -107,16 +108,10 @@ class BasicCanvasManipulate extends React.Component<BasicCanvasManipulateProps> 
     let self = this;
     const {drawSource} = this.state;
     sourceImgHandler.onload = function () {
-
       if (drawSource) {
         context.drawImage(sourceImgHandler, 0, 0);
+        self.renderTargetColumn();
       }
-
-      /* const {clipInfosFromSource} = self.state;
-      clipInfosFromSource.map((item) => {
-        context.strokeRect(item.x, item.y, item.width, item.height);
-        context.strokeStyle = 'red';
-      }) */
     }
     sourceImgHandler.src = sourceImg;
   }
@@ -145,13 +140,42 @@ class BasicCanvasManipulate extends React.Component<BasicCanvasManipulateProps> 
     );
   };
 
-
-  render() {
-    const {source_canvas_basic, imageFlowsBasic} = this.props;
-    const {drawSource} = this.state;
+  renderTargetColumn = () => {
+    const {imageFlowsBasic} = this.props;
 
     const listHeight = 600;
     const rowWidth = 200;
+
+    const element = (
+      <AutoSizer>
+        {
+          () => {
+          return <Table
+                    width={rowWidth}
+                    height={listHeight}
+                    deferredMeasurementCache={cache}
+                    headerHeight={20}
+                    rowHeight={cache.defaultHeight}
+                    rowCount={imageFlowsBasic.length}
+                    rowGetter={({ index }) => imageFlowsBasic[index]}
+                  >
+                    <Column
+                      width={200}
+                      label='Target Canvas'
+                      dataKey='target_canvas'
+                      cellRenderer={this.targetColumnCellRenderer}
+                    />
+                  </Table>
+          }
+        }
+      </AutoSizer>
+    );
+    ReactDOM.render(element, document.getElementById('basic-canvas-manipulate-section'));
+  }
+
+  render() {
+    const {source_canvas_basic} = this.props;
+
 
     return (
       <div className="page-body">
@@ -180,29 +204,7 @@ class BasicCanvasManipulate extends React.Component<BasicCanvasManipulateProps> 
             </div>
           </div>
         </div>
-        <div className="basic-canvas-section">
-          <AutoSizer>
-            {
-              () => {
-              return <Table
-                        width={rowWidth}
-                        height={listHeight}
-                        deferredMeasurementCache={cache}
-                        headerHeight={20}
-                        rowHeight={cache.defaultHeight}
-                        rowCount={imageFlowsBasic.length}
-                        rowGetter={({ index }) => imageFlowsBasic[index]}
-                      >
-                        <Column
-                          width={200}
-                          label='Target Canvas'
-                          dataKey='target_canvas'
-                          cellRenderer={this.targetColumnCellRenderer}
-                        />
-                      </Table>
-              }
-            }
-          </AutoSizer>
+        <div className="basic-canvas-manipulate-section" id="basic-canvas-manipulate-section">
         </div>
       </div>
     );

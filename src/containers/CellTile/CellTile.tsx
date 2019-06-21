@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactDOM from 'react-dom';
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import * as MyTypes from "MyTypes";
@@ -75,6 +76,11 @@ class CellTile extends React.Component<CellTileProps> {
     console.log('cells: ', cells);
 
     this.props.setRandomCellTiles(cells);
+
+    setTimeout(() => {
+      this.renderCellTile();
+    }, 100);
+    
   }
 
   drawSourceCanvas = (canvas: any) => {
@@ -93,17 +99,9 @@ class CellTile extends React.Component<CellTileProps> {
     let self = this;
     const {source_canvas_cell} = this.props;
     sourceImgHandler.onload = function () {
-
       if (source_canvas_cell) {
         context.drawImage(sourceImgHandler, 0, 0);
       }
-
-      /* const {cellTiles} = self.props;
-      let cellTilesData = self.getCellTileDatas();
-      cellTilesData.map((item) => {
-        context.strokeRect(item.x, item.y, item.width, item.height);
-        context.strokeStyle = 'red';
-      }) */
     }
     sourceImgHandler.src = sourceImg;
   }
@@ -126,7 +124,7 @@ class CellTile extends React.Component<CellTileProps> {
     return cellTilesData;
   }
 
-  targetColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+  targetColumnCellRenderer = ({dataKey, parent, rowIndex, style}) => {
     const {cellTiles} = this.props;
     let cellTilesData = this.getCellTileDatas();
 
@@ -135,7 +133,8 @@ class CellTile extends React.Component<CellTileProps> {
         cache={this.cache}
         key={dataKey}
         parent={parent}
-        rowIndex={rowIndex}>
+        rowIndex={rowIndex}
+        style={style}>
         <div
           style={{
             whiteSpace: 'normal',
@@ -146,15 +145,44 @@ class CellTile extends React.Component<CellTileProps> {
     );
   };
 
+  renderCellTile = () => {
+
+    const {cell} = this.state;
+    let cellTilesData = this.getCellTileDatas();
+    const listHeight = 600;
+
+    const element = cellTilesData.length > 0
+    ? (<AutoSizer>
+        {
+          () => {
+          return <Table
+                    width={cell.width}
+                    height={listHeight}
+                    deferredMeasurementCache={this.cache}
+                    headerHeight={20}
+                    rowHeight={this.cache.defaultHeight}
+                    rowCount={cellTilesData.length}
+                    rowGetter={({ index }) => cellTilesData[index]}
+                  >
+                    <Column
+                      width={cell.width}
+                      label='cell_Target Canvas'
+                      dataKey='cell_target_canvas'
+                      style={{margin: '0px'}}
+                      cellRenderer={this.targetColumnCellRenderer}
+                    />
+                  </Table>
+          }
+        }
+      </AutoSizer>)
+    : null
+
+    ReactDOM.render(element, document.getElementById('basic-canvas-section'));
+  }
 
   render() {
     const {source_canvas_cell} = this.props;
-    const {cell} = this.state;
-
-    let cellTilesData = this.getCellTileDatas();
-
-    const listHeight = 600;
-
+    
     return (
       <div className="page-body">
         <h4 className="page-title">
@@ -182,33 +210,7 @@ class CellTile extends React.Component<CellTileProps> {
             </div>
           </div>
         </div>
-        <div className="basic-canvas-section">
-          {
-            cellTilesData.length > 0
-            ? <AutoSizer>
-                {
-                  () => {
-                  return <Table
-                            width={cell.width + 100}
-                            height={listHeight}
-                            deferredMeasurementCache={this.cache}
-                            headerHeight={20}
-                            rowHeight={this.cache.defaultHeight + 40}
-                            rowCount={cellTilesData.length}
-                            rowGetter={({ index }) => cellTilesData[index]}
-                          >
-                            <Column
-                              width={cell.width + 100}
-                              label='cell_Target Canvas'
-                              dataKey='cell_target_canvas'
-                              cellRenderer={this.targetColumnCellRenderer}
-                            />
-                          </Table>
-                  }
-                }
-              </AutoSizer>
-            : null
-          }
+        <div className="basic-canvas-section" id="basic-canvas-section">
         </div>
       </div>
     );

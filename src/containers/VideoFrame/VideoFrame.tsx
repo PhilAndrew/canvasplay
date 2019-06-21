@@ -55,21 +55,14 @@ class VideoFrame extends React.Component<VideoFrameProps> {
     })
 
     this.interval = setInterval(()=> {
-
       let {frameIndex} = this.state;
-
-      this.drawVideoSourceCanvas(frameIndex);
+      this.generateVideoCells(frameIndex);
 
       frameIndex = frameIndex + 1;
-
-      this.setState({frameIndex: frameIndex % 3}, function () {
-        // console.log(this.state.frameIndex)
-      })
+      this.setState({frameIndex: frameIndex % 3});
     }, 1000);
   }
 
-  componentDidMount() {
-  }
 
   componentWillUnmount() {
     clearInterval(this.interval);
@@ -100,9 +93,6 @@ class VideoFrame extends React.Component<VideoFrameProps> {
       cells.push(tempRows);
     }
 
-    /* console.log('frameIndex:  ', idx);
-    console.log('vi[fr]: ', videoFrames[idx]); */
-
     if (videoFrames[idx] === undefined) {
       videoFrames.splice(idx, 0, cells);
     } else {
@@ -110,6 +100,23 @@ class VideoFrame extends React.Component<VideoFrameProps> {
     }
 
     this.props.setRandomVideoFrames(videoFrames);
+
+    this.drawVideoSourceCanvas(idx);
+  }
+
+  drawTempCanvas = (idx) => {
+    const {frameImgs} = this.state;
+
+    const tempCanvas: any = document.getElementById('vtemp' + idx);
+    if (tempCanvas) {
+      const tempContext = tempCanvas.getContext('2d');
+
+      let sourceImgHandler = new Image();
+      sourceImgHandler.onload = function () {
+          tempContext.drawImage(sourceImgHandler, 0, 0);
+      }
+      sourceImgHandler.src = frameImgs[idx];
+    }
   }
 
   drawVideoSourceCanvas = (idx) => {
@@ -128,11 +135,12 @@ class VideoFrame extends React.Component<VideoFrameProps> {
 
     let sourceImgHandler = new Image();
     let self = this;
-    const {source_canvas_videoframes} = this.props;
-    // console.log('xx: ', source_canvas_videoframes)
+    
     sourceImgHandler.onload = function () {
         context.drawImage(sourceImgHandler, 0, 0);
-        self.generateVideoCells(idx);
+        self.drawTempCanvas(idx)
+
+        
     }
     sourceImgHandler.src = frameImgs[idx];
   }
@@ -142,9 +150,8 @@ class VideoFrame extends React.Component<VideoFrameProps> {
   }
 
   render() {
-    const {cell, frameIndex, frameImgs} = this.state;
+    const {cell, frameImgs} = this.state;
     const {videoFrames} = this.props;
-    // console.log('video: ', videoFrames, frameIndex)
 
     const listHeight = 600;
 
@@ -153,11 +160,6 @@ class VideoFrame extends React.Component<VideoFrameProps> {
         <h4 className="page-title">
           VideoFrame
         </h4>
-        {/* <div className="action-section">
-          <button className="draw-src-canvas" onClick={this.startDrawSourceCanvas}>
-            Draw and Copy Frame
-          </button>
-        </div> */}
         <div className="source-section">
           <div className="frame-canv-comp">
             <h5 id="type" className="frame-cell-type">

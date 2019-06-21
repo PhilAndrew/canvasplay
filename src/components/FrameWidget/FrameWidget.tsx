@@ -33,7 +33,7 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
       return videoFramesData;
     }
 
-    targetColumnCellRenderer = ({dataKey, parent, rowIndex}) => {
+    targetColumnCellRenderer = ({dataKey, parent, rowIndex, style}) => {
       const {videoFrame , frameImg, cache, sourceId} = this.props;
 
       let videoFramesData = this.getVideoFrameDatas(videoFrame);
@@ -43,6 +43,7 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
           cache={cache}
           key={dataKey}
           parent={parent}
+          style={style}
           rowIndex={rowIndex}>
           <div
             style={{
@@ -65,18 +66,19 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
                 {
                   () => {
                   return <Table
-                              width={cell.width + 100}
+                              width={cell.width}
                               height={listHeight}
                               deferredMeasurementCache={cache}
                               headerHeight={20}
-                              rowHeight={cache.defaultHeight + 40}
+                              rowHeight={cache.defaultHeight}
                               rowCount={videoFramesData.length}
                               rowGetter={({ index }) => videoFramesData[index]}
                             >
                               <Column
-                                width={cell.width + 100}
+                                width={cell.width}
                                 label={'Video Frame ' + videoFramesData[0].frameIndex}
                                 dataKey='video_frame'
+                                style={{margin: '0px'}}
                                 cellRenderer={this.targetColumnCellRenderer}
                               />
                             </Table>

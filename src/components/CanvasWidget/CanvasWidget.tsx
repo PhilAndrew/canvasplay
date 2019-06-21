@@ -13,8 +13,6 @@ interface CanvasWidgetProps {
 class CanvasWidget extends React.Component<CanvasWidgetProps> {
     constructor(props: CanvasWidgetProps) {
         super(props);
-
-        // this.draw = this.draw.bind(this);
     }
 
     draw = (canvas: any) => {
@@ -35,31 +33,19 @@ class CanvasWidget extends React.Component<CanvasWidgetProps> {
         targetCanvasContext.canvas.height = height;
 
         const sourceCanvas: any = document.getElementById('source-canvas');
-        const sourceCanvasContext = sourceCanvas.getContext('2d');
 
-        let sourceImgHandler = new Image();
-        sourceImgHandler.onload = function () {
-            sourceCanvasContext.drawImage(sourceImgHandler, 0, 0);
+        imageFlow.real_target.map((rect: any, i: any) => {
+            targetCanvasContext.drawImage(sourceCanvas, 
+                imageFlow.real_source[i].x, 
+                imageFlow.real_source[i].y, 
+                imageFlow.real_source[i].width, 
+                imageFlow.real_source[i].height,
+                rect.x,
+                rect.y,
+                rect.width,
+                rect.height);
+        });
 
-            imageFlow.real_target.map((rect: any, i: any) => {
-                targetCanvasContext.drawImage(sourceCanvas, 
-                    imageFlow.real_source[i].x, 
-                    imageFlow.real_source[i].y, 
-                    imageFlow.real_source[i].width, 
-                    imageFlow.real_source[i].height,
-                    rect.x,
-                    rect.y,
-                    rect.width,
-                    rect.height);
-            });
-
-            /* // drawing position
-            imageFlow.source.map((item) => {
-                sourceCanvasContext.strokeRect(item.x, item.y, item.width, item.height);
-                sourceCanvasContext.strokeStyle = 'red';
-            }) */
-        }
-        sourceImgHandler.src = sourceImg;
     }
 
     render = () => {

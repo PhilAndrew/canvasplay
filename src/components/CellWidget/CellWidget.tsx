@@ -13,16 +13,12 @@ interface CellWidgetProps {
 class CellWidget extends React.Component<CellWidgetProps> {
     constructor(props: CellWidgetProps) {
         super(props);
-
-        // this.draw = this.draw.bind(this);
     }
 
     draw = (canvas: any) => {
-
         const node = canvas;
         const targetCanvasContext = node.getContext('2d');
-
-        const {cellData, sourceImg, sourceId} = this.props;
+        const {cellData, sourceId} = this.props;
 
         if (!targetCanvasContext) {
             return;
@@ -35,31 +31,17 @@ class CellWidget extends React.Component<CellWidgetProps> {
         targetCanvasContext.canvas.width = width;
         targetCanvasContext.canvas.height = height;
 
-        // console.log('sourceId: ', sourceId)
-
         const sourceCanvas: any = document.getElementById(sourceId);
-        const sourceCanvasContext = sourceCanvas.getContext('2d');
 
-        let sourceImgHandler = new Image();
-        sourceImgHandler.onload = function () {
-            sourceCanvasContext.drawImage(sourceImgHandler, 0, 0);
-
-            targetCanvasContext.drawImage(sourceCanvas, 
-                cellData.x, 
-                cellData.y, 
-                cellData.width, 
-                cellData.height,
-                0,
-                0,
-                cellData.width,
-                cellData.height);
-            /* // drawing position
-            imageFlow.source.map((item) => {
-                sourceCanvasContext.strokeRect(item.x, item.y, item.width, item.height);
-                sourceCanvasContext.strokeStyle = 'red';
-            }) */
-        }
-        sourceImgHandler.src = sourceImg;
+        targetCanvasContext.drawImage(sourceCanvas, 
+            cellData.x, 
+            cellData.y, 
+            cellData.width, 
+            cellData.height,
+            0,
+            0,
+            cellData.width,
+            cellData.height);
     }
 
     render = () => {

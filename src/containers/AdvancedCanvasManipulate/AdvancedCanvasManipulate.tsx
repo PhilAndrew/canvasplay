@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactDOM from 'react-dom';
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import * as MyTypes from "MyTypes";
@@ -109,17 +110,10 @@ class AdvancedCanvasManipulate extends React.Component<AdvancedCanvasManipulateP
     let self = this;
     const {drawSource} = this.state;
     sourceImgHandler.onload = function () {
-
       if (drawSource) {
         context.drawImage(sourceImgHandler, 0, 0);
       }
-      
-
-      /* const {clipInfosFromSource} = self.state;
-      clipInfosFromSource.map((item) => {
-        context.strokeRect(item.x, item.y, item.width, item.height);
-        context.strokeStyle = 'red';
-      }) */
+      self.renderTargetTable();
     }
     sourceImgHandler.src = sourceImg;
   }
@@ -286,12 +280,65 @@ class AdvancedCanvasManipulate extends React.Component<AdvancedCanvasManipulateP
     );
   };
 
-  render() {
-    const {source_canvas, imageFlows} = this.props;
-    const {drawSource} = this.state;
+  renderTargetTable = () => {
+    const {imageFlows} = this.props;
 
     const listHeight = 600;
     const rowWidth = 1100;
+
+    const element = (
+      <AutoSizer>
+        {
+          () => {
+          return <Table
+                    width={rowWidth}
+                    height={listHeight}
+                    deferredMeasurementCache={cache}
+                    headerHeight={20}
+                    rowHeight={cache.rowHeight}
+                    rowCount={imageFlows.length}
+                    rowGetter={({ index }) => imageFlows[index]}
+                  >
+                    <Column
+                      width={200}
+                      label='Target Canvas'
+                      dataKey='target_canvas'
+                      cellRenderer={this.targetColumnCellRenderer}
+                    />
+                    <Column
+                      width={200}
+                      label='Flow Mapping Id'
+                      dataKey='flow_mapping_id'
+                      cellRenderer={this.mappingFlowIdColumnCellRenderer}
+                    />
+                    <Column
+                      width={200}
+                      label='Sub Flow Mapping Id'
+                      dataKey='sub_flow_mapping_id'
+                      cellRenderer={this.subMappingFlowColumnCellRenderer}
+                    />
+                    <Column
+                      width={200}
+                      label='Source Data'
+                      dataKey='source'
+                      cellRenderer={this.sourcePositionColumnCellRenderer}
+                    />
+                    <Column
+                      width={200}
+                      label='Target Data'
+                      dataKey='target'
+                      cellRenderer={this.targetPositionColumnCellRenderer}
+                    />
+                  </Table>
+          }
+        }
+      </AutoSizer>
+    );
+    ReactDOM.render(element, document.getElementById('advanced-canvas-manipulate-section'));
+  }
+
+  render() {
+    const {source_canvas} = this.props;
 
     return (
       <div className="page-body">
@@ -320,53 +367,7 @@ class AdvancedCanvasManipulate extends React.Component<AdvancedCanvasManipulateP
             </div>
           </div>
         </div>
-        <div>
-          <AutoSizer>
-            {
-              () => {
-              return <Table
-                        width={rowWidth}
-                        height={listHeight}
-                        deferredMeasurementCache={cache}
-                        headerHeight={20}
-                        rowHeight={cache.rowHeight}
-                        rowCount={imageFlows.length}
-                        rowGetter={({ index }) => imageFlows[index]}
-                      >
-                        <Column
-                          width={200}
-                          label='Target Canvas'
-                          dataKey='target_canvas'
-                          cellRenderer={this.targetColumnCellRenderer}
-                        />
-                        <Column
-                          width={200}
-                          label='Flow Mapping Id'
-                          dataKey='flow_mapping_id'
-                          cellRenderer={this.mappingFlowIdColumnCellRenderer}
-                        />
-                        <Column
-                          width={200}
-                          label='Sub Flow Mapping Id'
-                          dataKey='sub_flow_mapping_id'
-                          cellRenderer={this.subMappingFlowColumnCellRenderer}
-                        />
-                        <Column
-                          width={200}
-                          label='Source Data'
-                          dataKey='source'
-                          cellRenderer={this.sourcePositionColumnCellRenderer}
-                        />
-                        <Column
-                          width={200}
-                          label='Target Data'
-                          dataKey='target'
-                          cellRenderer={this.targetPositionColumnCellRenderer}
-                        />
-                      </Table>
-              }
-            }
-          </AutoSizer>
+        <div className="advanced-canvas-manipulate-section" id="advanced-canvas-manipulate-section"> 
         </div>
       </div>
     );
