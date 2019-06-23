@@ -31,10 +31,18 @@
   transform: translateY(-7px);
 }
 
+.word-span {
+  margin-right: 4px;
+}
+
 .lojban-row {
   margin-bottom: 15px;
 }
 
-.word-span {
-  margin-right: 4px;
+.change-list-preview h4 {
+  margin-bottom: 10px;
+}
+
+.change-list-preview {
+  margin-bottom: 20px;
 }

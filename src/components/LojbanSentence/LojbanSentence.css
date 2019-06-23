@@ -1,0 +1,13 @@
+
+
+.lojban-character {
+  margin-right: 15px;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+}
+
+.lojban-character-container {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}

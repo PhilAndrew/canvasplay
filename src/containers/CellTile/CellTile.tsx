@@ -50,6 +50,17 @@ class CellTile extends React.Component<CellTileProps> {
     })
   }
 
+  get20KCellData = (cells) => {
+    let moreCellData = [];
+    let i = 0;
+    while (moreCellData.length < 20000) {
+      moreCellData.push(cells[i % cells.length]);
+      i++;
+    }
+    
+    return moreCellData;
+  }
+
   generateCells = () => {
     const {cell} = this.state;
 
@@ -74,6 +85,8 @@ class CellTile extends React.Component<CellTileProps> {
     }
 
     console.log('cells: ', cells);
+
+    cells = this.get20KCellData(cells);
 
     this.props.setRandomCellTiles(cells);
 
@@ -186,7 +199,7 @@ class CellTile extends React.Component<CellTileProps> {
     return (
       <div className="page-body">
         <h4 className="page-title">
-          Cell Tile
+          Cell Tile (20,000 cell)
         </h4>
         <div className="action-section">
           <button className="draw-src-canvas" onClick={this.startDrawSourceCanvas}>

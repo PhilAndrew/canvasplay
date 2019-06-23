@@ -5,6 +5,7 @@ import './LojbanCharacter.css';
 interface LojbanCharacterProps {
   word: any;
   borderLength: number;
+  borderColor: any;
 }
 
 class LojbanCharacter extends React.Component<LojbanCharacterProps> {
@@ -81,8 +82,8 @@ class LojbanCharacter extends React.Component<LojbanCharacterProps> {
     }
 
     render = () => {
-        const {word, borderLength} = this.props;
-        const lobjanStyle = {width: borderLength + 'px', height: borderLength + 'px'}
+        const {word, borderLength, borderColor} = this.props;
+        const lobjanStyle = {width: borderLength + 'px', height: borderLength + 'px', borderColor}
         return (
             <div className="lobjan-div" style={lobjanStyle}>
                 <Canvas draw={this.draw} />

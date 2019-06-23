@@ -3,14 +3,14 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import * as MyTypes from "MyTypes";
 import { actionTypes } from "../../actions";
-import Canvas from 'react-canvas-wrapper';
 
-import LojbanCharacter from "../../components/LojbanCharacter/LojbanCharacter";
+import LojbanSentence from "../../components/LojbanSentence/LojbanSentence";
 
 import './Lojban.css';
 
 interface LojbanState {
   lojbanDatas: any[];
+  demoChangeList: string;
 }
 
 interface LojbanProps {
@@ -22,7 +22,8 @@ class Lojban extends React.Component<LojbanProps> {
   constructor(props: LojbanProps) {
     super(props);
     this.state = {
-      lojbanDatas: ""
+      lojbanDatas: "",
+      demoChangeList: "laldo nanmu poi pu dunda ci"
     };
   }
 
@@ -37,14 +38,12 @@ class Lojban extends React.Component<LojbanProps> {
       "mi tavla do"
     ];
 
-    let lojbanDataArray = lojbanDatas.map(o => {
-      return o.split(' ');
-    })
-    this.props.setLojbanDatas(lojbanDataArray);
+    this.props.setLojbanDatas(lojbanDatas);
   }
 
   render() {
     const {lojbanDatas} = this.props;
+    const {demoChangeList} = this.state;
 
     return (
       <div className="page-body">
@@ -56,32 +55,26 @@ class Lojban extends React.Component<LojbanProps> {
             Draw Lobjan Characters
           </button>
         </div>
+        <div className="change-list-preview">
+          <h4>Change List</h4>
+          {demoChangeList}
+        </div>
         <div>
           {
             lojbanDatas.map((rowDatas, rowIdx) => {
               return (
                 <div key={'row' + rowIdx} >
                   <div className="lojban-row">
-                    {
-                      rowDatas.map((word, colIdx) => {
-                        return (
-                          <span key={'wordspan' + colIdx} className="word-span">{word}</span>
-                        )
-                      })
-                    }
-                  </div>
-                  <div className="lojban-row">
-                    {
-                      rowDatas.map((word, colIdx) => {
-                        return (
-                          <LojbanCharacter
-                            key={'col' + colIdx}
-                            word={word}
-                            borderLength={30}
-                          />
-                        )
-                      })
-                    }
+                    <div style={{marginBottom: '5px'}}>
+                      <span key={'wordspan' + rowIdx} className="word-span">{rowDatas}</span>
+                    </div>
+                    <LojbanSentence
+                      key={'lojbansentenc' + rowIdx}
+                      sentence={rowDatas}
+                      borderLength={30}
+                      changeList={demoChangeList}
+                      sentenceIndex={rowIdx}
+                    />
                   </div>
                 </div>
               )
