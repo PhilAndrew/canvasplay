@@ -6,35 +6,40 @@ import { actionTypes } from "../../actions";
 import Canvas from 'react-canvas-wrapper';
 
 import FrameWidget from "../../components/FrameWidget/FrameWidget";
+import FrameListForm from "../../components/FrameListForm/FrameListForm";
 
 import { CellMeasurerCache} from "react-virtualized";
 
-import './VideoFrame.css';
+import './VideoFrame2.css';
 
 import * as sourceImg from '../../assets/frame1.jpg';
 import * as sourceImg2 from '../../assets/frame2.jpg';
 import * as sourceImg3 from '../../assets/frame3.jpg';
+import * as sourceImg4 from '../../assets/frame4.jpg';
+import * as sourceImg5 from '../../assets/frame5.jpg';
 
-interface VideoFrameState {
+interface VideoFrame2State {
   canvases: string;
   drawSource: boolean;
   cell: any;
   frameIndex: any;
 }
 
-interface VideoFrameProps {
-  videoFrames: any[];
-  source_canvas_videoframes: any;
-  setRandomVideoFrames: (videoFrames: any) => object;
-  setSourceVideoFrame: (sourceCanvas: any) => object;
+interface VideoFrame2Props {
+  videoFrames2: any[];
+  videoFrames2LocationInfo: any[];
+  source_canvas_videoframes2: any;
+  setRandomVideoFrames2LocationInfo: (videoFrames2LocationInfo: any) => object;
+  setRandomVideoFrames2: (videoFrames: any) => object;
+  setSourceCanvasVideoFrame2: (sourceCanvas: any) => object;
 }
 
-class VideoFrame extends React.Component<VideoFrameProps> {
+class VideoFrame2 extends React.Component<VideoFrame2Props> {
   
   private cache: CellMeasurerCache;
   private interval: any;
   
-  constructor(props: VideoFrameProps) {
+  constructor(props: VideoFrame2Props) {
     super(props);
     this.state = {
       canvases: "",
@@ -44,7 +49,7 @@ class VideoFrame extends React.Component<VideoFrameProps> {
         height: 50
       },
       frameIndex: 0,
-      frameImgs: [sourceImg, sourceImg2, sourceImg3]
+      frameImgs: [sourceImg, sourceImg2, sourceImg3, sourceImg4, sourceImg5]
     };
 
     const {cell} = this.state;
@@ -61,7 +66,7 @@ class VideoFrame extends React.Component<VideoFrameProps> {
       this.drawVideoSourceCanvas(frameIndex);
 
       frameIndex = frameIndex + 1;
-      this.setState({frameIndex: frameIndex % 3});
+      this.setState({frameIndex: frameIndex % 5});
     }, 1000);
   }
 
@@ -74,12 +79,33 @@ class VideoFrame extends React.Component<VideoFrameProps> {
     const {frameImgs} = this.state;
     frameImgs.map((o, idx) => {
       this.generateVideoCells(idx);
+      this.generateRandomLocationInfo(idx);
     })
+  }
+
+  generateRandomLocationInfo = (idx) =>{
+    let {videoFrames2LocationInfo} = this.props;
+    
+    let locationInfo = {
+      posX: Math.floor(Math.random() * 400),
+      posY: Math.floor(Math.random() * 200),
+      width: Math.floor(Math.random() * 500),
+      height: Math.floor(Math.random() * 1000),
+      cellIndex: 0
+    }
+
+    if (videoFrames2LocationInfo[idx] === undefined) {
+      videoFrames2LocationInfo.splice(idx, 0, locationInfo);
+    } else {
+      videoFrames2LocationInfo[idx] = locationInfo;
+    }
+
+    this.props.setRandomVideoFrames2LocationInfo(videoFrames2LocationInfo);
   }
 
   generateVideoCells = (idx) => {
     const {cell} = this.state;
-    let {videoFrames} = this.props;
+    let {videoFrames2} = this.props;
 
     let cells = [];
     
@@ -102,13 +128,13 @@ class VideoFrame extends React.Component<VideoFrameProps> {
       cells.push(tempRows);
     }
 
-    if (videoFrames[idx] === undefined) {
-      videoFrames.splice(idx, 0, cells);
+    if (videoFrames2[idx] === undefined) {
+      videoFrames2.splice(idx, 0, cells);
     } else {
-      videoFrames[idx] = cells;
+      videoFrames2[idx] = cells;
     }
 
-    this.props.setRandomVideoFrames(videoFrames);
+    this.props.setRandomVideoFrames2(videoFrames2);
   }
 
   drawTempCanvas = (idx) => {
@@ -130,7 +156,7 @@ class VideoFrame extends React.Component<VideoFrameProps> {
 
     const {frameImgs} = this.state;
 
-    const canvas: any = document.getElementById('videoframe-source-canvas');
+    const canvas: any = document.getElementById('videoframe-source-canvas2');
     const context = canvas.getContext('2d');
 
     const pixelRatio = window.devicePixelRatio || 1;
@@ -151,38 +177,40 @@ class VideoFrame extends React.Component<VideoFrameProps> {
   }
 
   startDrawSourceCanvas = () => {
-    this.props.setSourceVideoFrame('ready to copy');
+    this.props.setSourceCanvasVideoFrame2('ready to copy');
   }
 
   render() {
     const {cell, frameImgs} = this.state;
-    const {videoFrames} = this.props;
+    const {videoFrames2, videoFrames2LocationInfo} = this.props;
 
     const listHeight = 600;
 
     return (
       <div className="page-body">
         <h4 className="page-title">
-          VideoFrame
+          VideoFrame2
         </h4>
         <div className="source-section">
           <div className="frame-canv-comp">
-            <h5 id="type" className="frame-cell-type">
+            {/* <h5 id="type" className="frame-cell-type">
               Source Canvas
-            </h5>
-            <div className="frame-cell-canv-div">
-              <Canvas id="videoframe-source-canvas" ref="videoframe-source-canvas" width={1024} height={1024} /> 
+            </h5> */}
+            <div className="frame-cell-canv-div2">
+              <Canvas id="videoframe-source-canvas2" ref="videoframe-source-canvas2" width={1024} height={1024} /> 
               {
-                videoFrames.map((o, i) => {
+                videoFrames2.map((o, i) => {
                   return (<Canvas key={'vtempcanv' + i} className="vtemp" id={'vtemp' + i} ref="vtemp" width={1024} height={1024} />);
                 })
               } 
             </div>
           </div>
         </div>
-        <div className="frame-container">
+        <FrameListForm></FrameListForm>
+        <div className="frame-container2">
           {
-            videoFrames.map((o, i) => {
+            videoFrames2LocationInfo ?
+            videoFrames2.map((o, i) => {
               return (
                     <FrameWidget
                       key={'framewidget' + i}
@@ -192,9 +220,11 @@ class VideoFrame extends React.Component<VideoFrameProps> {
                       listHeight={listHeight}
                       cache={this.cache}
                       sourceId={'vtemp' + i}
+                      locationInfo={videoFrames2LocationInfo[i]}
                     ></FrameWidget>
               )
             })
+            : null
           }
         </div>
       </div>
@@ -204,17 +234,19 @@ class VideoFrame extends React.Component<VideoFrameProps> {
 
 const MapStateToProps = (store: MyTypes.ReducerState) => {
   return {
-    videoFrames: store.canvasRs.videoFrames,
-    source_canvas_videoframes: store.canvasRs.source_canvas_videoframes
+    videoFrames2: store.canvasRs.videoFrames2,
+    videoFrames2LocationInfo: store.canvasRs.videoFrames2LocationInfo,
+    source_canvas_videoframes2: store.canvasRs.source_canvas_videoframes2
   };
 };
 
 const MapDispatchToProps = (dispatch: Dispatch<MyTypes.RootAction>) => ({
-  setRandomVideoFrames: (videoFrames: any) => dispatch({ type: actionTypes.SET_RANDOM_VIDEOFRAME, payload: videoFrames }),
-  setSourceVideoFrame: (sourceCanvas: any) => dispatch({ type: actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME, payload: sourceCanvas })
+  setRandomVideoFrames2: (videoFrames2: any) => dispatch({ type: actionTypes.SET_RANDOM_VIDEOFRAME2, payload: videoFrames2 }),
+  setRandomVideoFrames2LocationInfo: (videoFrames2LocationInfo: any) => dispatch({ type: actionTypes.SET_RANDOM_VIDEOFRAME2_LOCATIONINFO, payload: videoFrames2LocationInfo }),
+  setSourceCanvasVideoFrame2: (sourceCanvas: any) => dispatch({ type: actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME2, payload: sourceCanvas })
 });
 
 export default connect(
   MapStateToProps,
   MapDispatchToProps
-)(VideoFrame);
+)(VideoFrame2);

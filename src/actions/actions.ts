@@ -12,7 +12,11 @@ export enum actionTypes {
   SET_SOURCE_CANVAS_CELL = "SET_SOURCE_CANVAS_CELL",
 
   SET_RANDOM_VIDEOFRAME = "SET_RANDOM_VIDEOFRAME",
-  SET_SOURCE_CANVAS_VIDEOFRAME = "SET_SOURCE_CANVAS_VIDEOFRAME"
+  SET_SOURCE_CANVAS_VIDEOFRAME = "SET_SOURCE_CANVAS_VIDEOFRAME",
+
+  SET_RANDOM_VIDEOFRAME2 = "SET_RANDOM_VIDEOFRAME2",
+  SET_RANDOM_VIDEOFRAME2_LOCATIONINFO = "SET_RANDOM_VIDEOFRAME2_LOCATIONINFO",
+  SET_SOURCE_CANVAS_VIDEOFRAME2 = "SET_SOURCE_CANVAS_VIDEOFRAME2"
 }
 
 export const canvasActions = {
@@ -26,5 +30,9 @@ export const canvasActions = {
   setSourceCanvasCell: (sourceCanvas: any) => action(actionTypes.SET_SOURCE_CANVAS_CELL, sourceCanvas),
 
   setRandomVideoFrames: (videoFrames: any) => action(actionTypes.SET_RANDOM_VIDEOFRAME, videoFrames),
-  setSourceCanvasVideoFrame: (sourceCanvas: any) => action(actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME, sourceCanvas)
+  setSourceCanvasVideoFrame: (sourceCanvas: any) => action(actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME, sourceCanvas),
+
+  setRandomVideoFrames2: (videoFrames2: any) => action(actionTypes.SET_RANDOM_VIDEOFRAME2, videoFrames2),
+  setRandomVideoFrames2LocationInfo: (videoFrame2LocationInfo: any) => action(actionTypes.SET_RANDOM_VIDEOFRAME2_LOCATIONINFO, videoFrame2LocationInfo),
+  setSourceCanvasVideoFrame2: (sourceCanvas: any) => action(actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME2, sourceCanvas)
 };

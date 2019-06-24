@@ -14,6 +14,7 @@ interface FrameWidgetProps {
   listHeight: any;
   cache: CellMeasurerCache;
   sourceId: any;
+  locationInfo: any;
 }
 
 class FrameWidget extends React.Component<FrameWidgetProps> {
@@ -56,9 +57,11 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
     };
 
     render = () => {
-        const {videoFrame, cell, listHeight, cache} = this.props;
+        const {videoFrame, cell, listHeight, cache, locationInfo} = this.props;
         let videoFramesData = this.getVideoFrameDatas(videoFrame);
-        const frameCanvasStyle = {width: cell.width + 100}
+        const frameCanvasStyle = locationInfo 
+          ? {position: 'absolute', left: locationInfo.posX+'px', top: locationInfo.posY+'px', width: locationInfo.width, height: locationInfo.height}
+          : {width: cell.width + 100}
 
         return (
             <div className="frame-canvas-section" style={frameCanvasStyle}>
@@ -66,17 +69,19 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
                 {
                   () => {
                   return <Table
-                              width={cell.width}
-                              height={listHeight}
+                              width={locationInfo ? locationInfo.width : cell.width}
+                              height={locationInfo ? locationInfo.height : listHeight}
                               deferredMeasurementCache={cache}
                               headerHeight={20}
                               rowHeight={cache.defaultHeight}
                               rowCount={videoFramesData.length}
                               rowGetter={({ index }) => videoFramesData[index]}
+                              scrollToAlignment={'start'}
+                              scrollToIndex={locationInfo ? locationInfo.cellIndex : 0}
                             >
                               <Column
                                 width={cell.width}
-                                label={'Video Frame ' + videoFramesData[0].frameIndex}
+                                label={'Frame ' + videoFramesData[0].frameIndex}
                                 dataKey='video_frame'
                                 style={{margin: '0px'}}
                                 cellRenderer={this.targetColumnCellRenderer}

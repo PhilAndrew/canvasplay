@@ -13,6 +13,10 @@ interface ITodoModel {
 
   source_canvas_videoframes: any;
   videoFrames: any;
+
+  source_canvas_videoframes2: any;
+  videoFrames2LocationInfo: any;
+  videoFrames2: any;
 }
 
 export const initialState: ITodoModel = {
@@ -26,11 +30,34 @@ export const initialState: ITodoModel = {
   cellTiles: [],
 
   source_canvas_videoframes: null,
-  videoFrames: []
+  videoFrames: [],
+
+  source_canvas_videoframes2: null,
+  videoFrames2LocationInfo: [],
+  videoFrames2: []
 };
 
 export const canvasReducer = (state: ITodoModel = initialState, action: MyTypes.RootAction) => {
   switch (action.type) {
+
+    case actionTypes.SET_SOURCE_CANVAS_VIDEOFRAME2: {
+      return {
+        ...state,
+        source_canvas_videoframes2: action.payload,
+      };
+    } 
+    case actionTypes.SET_RANDOM_VIDEOFRAME2_LOCATIONINFO: {
+      return {
+        ...state,
+        videoFrames2LocationInfo: action.payload,
+      };
+    } 
+    case actionTypes.SET_RANDOM_VIDEOFRAME2: {
+      return {
+        ...state,
+        videoFrames2: action.payload,
+      };
+    }
 
     case actionTypes.SET_SOURCE_CANVAS_CELL: {
       return {
@@ -52,7 +79,6 @@ export const canvasReducer = (state: ITodoModel = initialState, action: MyTypes.
       };
     } 
     case actionTypes.SET_RANDOM_VIDEOFRAME: {
-      // console.log('actio: ', action.payload);
       return {
         ...state,
         videoFrames: action.payload,

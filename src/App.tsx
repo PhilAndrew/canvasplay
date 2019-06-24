@@ -8,6 +8,7 @@ import BasicCanvasManipulate from "./containers/BasicCanvasManipulate/BasicCanva
 import Lojban from "./containers/Lojban/Lojban";
 import CellTile from "./containers/CellTile/CellTile";
 import VideoFrame from "./containers/VideoFrame/VideoFrame";
+import VideoFrame2 from "./containers/VideoFrame2/VideoFrame2";
 
 export const App: React.FC<{}> = () => {
   return (
@@ -18,6 +19,7 @@ export const App: React.FC<{}> = () => {
       <Route path="/lojban" exact component={Lojban} />
       <Route path="/celltile" exact component={CellTile} />
       <Route path="/videoFrame" exact component={VideoFrame} />
+      <Route path="/videoFrame2" exact component={VideoFrame2} />
     </Router>
   );
 };
