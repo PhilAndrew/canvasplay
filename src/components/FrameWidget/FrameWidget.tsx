@@ -60,36 +60,50 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
         const {videoFrame, cell, listHeight, cache, locationInfo} = this.props;
         let videoFramesData = this.getVideoFrameDatas(videoFrame);
         const frameCanvasStyle = locationInfo 
-          ? {position: 'absolute', left: locationInfo.posX+'px', top: locationInfo.posY+'px', width: locationInfo.width, height: locationInfo.height}
+          ? { position: 'absolute', 
+              transform: 'translateZ('+ locationInfo.translateZ +'px) ' + 
+                         'rotateX('+ locationInfo.rotate.x +'deg) ' +
+                         'rotateY('+ locationInfo.rotate.y +'deg) ' +
+                         'rotateZ('+ locationInfo.rotate.z +'deg) ',
+              left: locationInfo.posX+'px',
+              top: locationInfo.posY+'px',
+              width: locationInfo.width,
+              height: locationInfo.height}
           : {width: cell.width + 100}
+        
+        const fcsStyle = locationInfo
+          ? { perspective: locationInfo.perspective + 'em'}
+          : {}
 
         return (
-            <div className="frame-canvas-section" style={frameCanvasStyle}>
-              <AutoSizer>
-                {
-                  () => {
-                  return <Table
-                              width={locationInfo ? locationInfo.width : cell.width}
-                              height={locationInfo ? locationInfo.height : listHeight}
-                              deferredMeasurementCache={cache}
-                              headerHeight={20}
-                              rowHeight={cache.defaultHeight}
-                              rowCount={videoFramesData.length}
-                              rowGetter={({ index }) => videoFramesData[index]}
-                              scrollToAlignment={'start'}
-                              scrollToIndex={locationInfo ? locationInfo.cellIndex : 0}
-                            >
-                              <Column
+            <div className="fcs-container" style={fcsStyle}>
+              <div className="frame-canvas-section" style={frameCanvasStyle}>
+                <AutoSizer>
+                  {
+                    () => {
+                    return <Table
                                 width={cell.width}
-                                label={'Frame ' + videoFramesData[0].frameIndex}
-                                dataKey='video_frame'
-                                style={{margin: '0px'}}
-                                cellRenderer={this.targetColumnCellRenderer}
-                              />
-                            </Table>
+                                height={locationInfo ? locationInfo.height : listHeight}
+                                deferredMeasurementCache={cache}
+                                headerHeight={20}
+                                rowHeight={cache.defaultHeight}
+                                rowCount={videoFramesData.length}
+                                rowGetter={({ index }) => videoFramesData[index]}
+                                scrollToAlignment={'start'}
+                                scrollToIndex={locationInfo ? locationInfo.cellIndex : 0}
+                              >
+                                <Column
+                                  width={cell.width}
+                                  label={'Frame ' + videoFramesData[0].frameIndex}
+                                  dataKey='video_frame'
+                                  style={{margin: '0px'}}
+                                  cellRenderer={this.targetColumnCellRenderer}
+                                />
+                              </Table>
+                      }
                     }
-                  }
-              </AutoSizer>
+                </AutoSizer>
+              </div>
             </div>
         )
     }

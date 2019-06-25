@@ -33,6 +33,10 @@
 .frame-container2 {
   position: relative;
   border-top: solid #2EE59D;
+  
+  overflow: auto;
+  width: 100%;
+  height: 700px;
   /* display: flex;
   justify-content: center; */
 }
@@ -42,3 +46,7 @@
   position: absolute;
   left: 30px;
 }
+
+/* .video-frame2 {
+  perspective: 10em;
+} */

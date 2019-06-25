@@ -54,11 +54,6 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
 
     const {cell} = this.state;
 
-    this.cache = new CellMeasurerCache({
-      fixedWidth: true,
-      defaultHeight: cell.height
-    })
-
     this.initVideoFrameData();
 
     this.interval = setInterval(()=> {
@@ -78,7 +73,6 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
   initVideoFrameData = () => {
     const {frameImgs} = this.state;
     frameImgs.map((o, idx) => {
-      this.generateVideoCells(idx);
       this.generateRandomLocationInfo(idx);
     })
   }
@@ -89,9 +83,16 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
     let locationInfo = {
       posX: Math.floor(Math.random() * 400),
       posY: Math.floor(Math.random() * 200),
-      width: Math.floor(Math.random() * 500),
-      height: Math.floor(Math.random() * 1000),
-      cellIndex: 0
+      width: Math.floor(Math.random() * 500) + 50,
+      height: Math.floor(Math.random() * 1000) + 100,
+      cellIndex: 0,
+      translateZ: 0,
+      rotate: {
+        x: 0,
+        y: 0,
+        z: 0
+      },
+      perspective: 1
     }
 
     if (videoFrames2LocationInfo[idx] === undefined) {
@@ -100,17 +101,18 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
       videoFrames2LocationInfo[idx] = locationInfo;
     }
 
-    this.props.setRandomVideoFrames2LocationInfo(videoFrames2LocationInfo);
+    // 
+    this.generateVideoCells(idx, videoFrames2LocationInfo, locationInfo);
   }
 
-  generateVideoCells = (idx) => {
+  generateVideoCells = (idx, videoFrames2LocationInfo, locationInfo) => {
     const {cell} = this.state;
     let {videoFrames2} = this.props;
 
     let cells = [];
     
-    const numRows = Math.floor(1024 / cell.height);
-    const numCols = Math.floor(1024 / cell.width);
+    const numRows = Math.floor(1024 / locationInfo.height);
+    const numCols = Math.floor(1024 / locationInfo.width);
 
     for (let i = 0; i < numCols; i++) {
       let tempRows = [];
@@ -118,10 +120,10 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
         tempRows.push({
           id: 'celltarget' + ((i * numRows) + j),
           index: (i * numRows) + j,
-          x: i * cell.width,
-          y: j * cell.height,
-          width: cell.width,
-          height: cell.height,
+          x: i * locationInfo.width,
+          y: j * locationInfo.height,
+          width: locationInfo.width,
+          height: locationInfo.height,
           frameIndex: idx
         })
       }
@@ -134,7 +136,13 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
       videoFrames2[idx] = cells;
     }
 
+    this.cache = new CellMeasurerCache({
+      fixedWidth: true,
+      defaultHeight: locationInfo.height
+    })
+
     this.props.setRandomVideoFrames2(videoFrames2);
+    this.props.setRandomVideoFrames2LocationInfo(videoFrames2LocationInfo);
   }
 
   drawTempCanvas = (idx) => {
@@ -187,7 +195,7 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
     const listHeight = 600;
 
     return (
-      <div className="page-body">
+      <div className="page-body video-frame2">
         <h4 className="page-title">
           VideoFrame2
         </h4>
@@ -216,7 +224,7 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
                       key={'framewidget' + i}
                       videoFrame={o}
                       frameImg={frameImgs[i]}
-                      cell={cell}
+                      cell={{width: videoFrames2LocationInfo[i].width, height: videoFrames2LocationInfo[i].height}}
                       listHeight={listHeight}
                       cache={this.cache}
                       sourceId={'vtemp' + i}

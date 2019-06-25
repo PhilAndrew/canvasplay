@@ -39,8 +39,12 @@ class FrameListForm extends React.Component<FrameListFormProps> {
             posY: parseInt(listInfo.posY),
             width: parseInt(listInfo.width),
             height: parseInt(listInfo.height),
-            cellIndex: parseInt(listInfo.cellIndex)
+            cellIndex: parseInt(listInfo.cellIndex),
+            translateZ: parseInt(listInfo.translateZ),
+            rotate: listInfo.rotate,
+            perspective: listInfo.perspective
         }
+        console.log('updatedLocationInfo:  ', updatedLocationInfo)
         this.props.setRandomVideoFrames2LocationInfo(updatedLocationInfo);
     }
 
@@ -91,6 +95,32 @@ class FrameListForm extends React.Component<FrameListFormProps> {
                     <div className="form-item">
                         <label>Cell Index</label>
                         <input type="number" value={listInfo.cellIndex} onChange={(e) => {this.setState({listInfo: {...listInfo, cellIndex: e.target.value}})}} />
+                    </div>
+                </div>
+                <div className="form-row">
+                    <div className="form-item">
+                        <label>Translate Z-axis</label>
+                        <input type="number" value={listInfo.translateZ} onChange={(e) => {this.setState({listInfo: {...listInfo, translateZ: e.target.value}})}} />
+                    </div>
+                </div>
+                <div className="form-row">
+                    <div className="form-item">
+                        <label>Rotate X-axis</label>
+                        <input type="number" value={listInfo.rotate.x} onChange={(e) => {let urotate = {...listInfo.rotate, x: parseInt(e.target.value)}; this.setState({listInfo: {...listInfo, rotate: urotate}})}} />
+                    </div>
+                    <div className="form-item">
+                        <label>Rotate Y-axis</label>
+                        <input type="number" value={listInfo.rotate.y} onChange={(e) => {let urotate = {...listInfo.rotate, y: parseInt(e.target.value)}; this.setState({listInfo: {...listInfo, rotate: urotate}})}} />
+                    </div>
+                    <div className="form-item">
+                        <label>Rotate Z-axis</label>
+                        <input type="number" value={listInfo.rotate.z} onChange={(e) => {let urotate = {...listInfo.rotate, z: parseInt(e.target.value)}; this.setState({listInfo: {...listInfo, rotate: urotate}})}} />
+                    </div>
+                </div>
+                <div className="form-row">
+                    <div className="form-item">
+                        <label>Perspective</label>
+                        <input type="number" value={listInfo.perspective} onChange={(e) => {this.setState({listInfo: {...listInfo, perspective: e.target.value}})}} />
                     </div>
                 </div>
                 <div className="form-row">
