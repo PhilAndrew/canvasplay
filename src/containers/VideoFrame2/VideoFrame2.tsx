@@ -92,7 +92,8 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
         y: 0,
         z: 0
       },
-      perspective: 1
+      perspective: 1,
+      isPerspective: true
     }
 
     if (videoFrames2LocationInfo[idx] === undefined) {

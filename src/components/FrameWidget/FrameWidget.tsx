@@ -72,7 +72,7 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
           : {width: cell.width + 100}
         
         const fcsStyle = locationInfo
-          ? { perspective: locationInfo.perspective + 'em'}
+          ? locationInfo.isPerspective ? { perspective: locationInfo.perspective + 'em'} : {}
           : {}
 
         return (
