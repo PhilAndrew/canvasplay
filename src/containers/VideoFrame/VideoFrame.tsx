@@ -144,8 +144,10 @@ class VideoFrame extends React.Component<VideoFrameProps> {
     let self = this;
     
     sourceImgHandler.onload = function () {
-        context.drawImage(sourceImgHandler, 0, 0);
+        context.drawImage(sourceImgHandler, 0, 0); // this mean, server will draw the frame
         self.drawTempCanvas(idx)
+        // this mean, when server send the frame with the JSON,  
+        // then this function will draw the flow from video canvas -> source canvas(hidden), idx means the flow_mapping_id
     }
     sourceImgHandler.src = frameImgs[idx];
   }
