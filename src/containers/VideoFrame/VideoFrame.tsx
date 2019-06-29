@@ -194,6 +194,7 @@ class VideoFrame extends React.Component<VideoFrameProps> {
                       listHeight={listHeight}
                       cache={this.cache}
                       sourceId={'vtemp' + i}
+                      layout={'vertical'}
                     ></FrameWidget>
               )
             })

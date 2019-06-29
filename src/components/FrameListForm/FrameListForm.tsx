@@ -43,7 +43,9 @@ class FrameListForm extends React.Component<FrameListFormProps> {
             translateZ: parseInt(listInfo.translateZ),
             rotate: listInfo.rotate,
             perspective: listInfo.perspective,
-            isPerspective: listInfo.isPerspective
+            isPerspective: listInfo.isPerspective,
+            layout: listInfo.layout,
+            listIndex: listInfo.listIndex
         }
         console.log('updatedLocationInfo:  ', listInfo)
         this.props.setRandomVideoFrames2LocationInfo(updatedLocationInfo);
@@ -126,6 +128,18 @@ class FrameListForm extends React.Component<FrameListFormProps> {
                     <div className="form-item">
                         <label>Enable Perspective</label>
                         <input type="checkbox" defaultChecked={listInfo.isPerspective} onChange={(e) => { console.log('ispers: ', e.target.value); this.setState({listInfo: {...listInfo, isPerspective: !listInfo.isPerspective}})}} />
+                    </div>
+                    <div className="form-item">
+                        <label>Layout</label>
+                        <select value={listInfo.layout} onChange={(e) => {
+                                this.setState({listInfo: {
+                                    ...listInfo,
+                                    layout: e.target.value
+                                }});
+                            }}>
+                            <option key={'la1'} value={'horizontal'}>Horizontal</option>
+                            <option key={'la2'} value={'vertical'}>Vertical</option>
+                        </select>
                     </div>
                 </div>
                 <div className="form-row">

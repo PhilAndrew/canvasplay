@@ -18,6 +18,8 @@ import * as sourceImg3 from '../../assets/frame3.jpg';
 import * as sourceImg4 from '../../assets/frame4.jpg';
 import * as sourceImg5 from '../../assets/frame5.jpg';
 
+import {isEqual} from 'lodash';
+
 interface VideoFrame2State {
   canvases: string;
   drawSource: boolean;
@@ -70,6 +72,15 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
     clearInterval(this.interval);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (!isEqual(this.props.videoFrames2LocationInfo, nextProps.videoFrames2LocationInfo)) {
+      const {videoFrames2LocationInfo} = nextProps;
+      videoFrames2LocationInfo.map((o, idx) => {
+        this.generateVideoCells(idx, videoFrames2LocationInfo, o, 'manual');
+      })
+    }
+  }
+
   initVideoFrameData = () => {
     const {frameImgs} = this.state;
     frameImgs.map((o, idx) => {
@@ -93,7 +104,8 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
         z: 0
       },
       perspective: 1,
-      isPerspective: true
+      isPerspective: true,
+      layout: 'vertical'
     }
 
     if (videoFrames2LocationInfo[idx] === undefined) {
@@ -106,7 +118,7 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
     this.generateVideoCells(idx, videoFrames2LocationInfo, locationInfo);
   }
 
-  generateVideoCells = (idx, videoFrames2LocationInfo, locationInfo) => {
+  generateVideoCells = (idx, videoFrames2LocationInfo, locationInfo, type="random") => {
     const {cell} = this.state;
     let {videoFrames2} = this.props;
 
@@ -143,7 +155,9 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
     })
 
     this.props.setRandomVideoFrames2(videoFrames2);
-    this.props.setRandomVideoFrames2LocationInfo(videoFrames2LocationInfo);
+    if (type === 'random') {
+      this.props.setRandomVideoFrames2LocationInfo(videoFrames2LocationInfo);
+    }
   }
 
   drawTempCanvas = (idx) => {
@@ -230,6 +244,7 @@ class VideoFrame2 extends React.Component<VideoFrame2Props> {
                       cache={this.cache}
                       sourceId={'vtemp' + i}
                       locationInfo={videoFrames2LocationInfo[i]}
+                      layout={videoFrames2LocationInfo[i].layout}
                     ></FrameWidget>
               )
             })
