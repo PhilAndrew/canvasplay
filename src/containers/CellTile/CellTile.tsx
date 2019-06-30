@@ -53,7 +53,7 @@ class CellTile extends React.Component<CellTileProps> {
   get20KCellData = (cells) => {
     let moreCellData = [];
     let i = 0;
-    while (moreCellData.length < 20000) {
+    while (moreCellData.length < 1500) {
       moreCellData.push(cells[i % cells.length]);
       i++;
     }
@@ -144,6 +144,7 @@ class CellTile extends React.Component<CellTileProps> {
     return (
       <CellMeasurer
         cache={this.cache}
+        columnIndex={0}
         key={dataKey}
         parent={parent}
         rowIndex={rowIndex}
