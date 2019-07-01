@@ -8,6 +8,8 @@ import Canvas from 'react-canvas-wrapper';
 import CellWidget from "../../components/CellWidget/CellWidget";
 
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column } from "react-virtualized";
+import { FixedSizeList as Listw } from "react-window";
+
 import 'react-virtualized/styles.css';
 
 import './CellTile.css';
@@ -53,7 +55,7 @@ class CellTile extends React.Component<CellTileProps> {
   get20KCellData = (cells) => {
     let moreCellData = [];
     let i = 0;
-    while (moreCellData.length < 1500) {
+    while (moreCellData.length < 20000) {
       moreCellData.push(cells[i % cells.length]);
       i++;
     }
@@ -159,9 +161,19 @@ class CellTile extends React.Component<CellTileProps> {
     );
   };
 
+  Row = ({ index, style }) => {
+    let cellTilesData = this.getCellTileDatas();
+
+    return (
+      <div style={style}>
+        <CellWidget key={'celltile' + index+'1a'} sourceId="celltile-source-canvas" sourceImg={sourceImg} isBorderNeeded={false} cellData={cellTilesData[index]} />
+      </div>
+    )
+  }
+
   renderCellTile = () => {
 
-    const {cell} = this.state;
+    /* const {cell} = this.state;
     let cellTilesData = this.getCellTileDatas();
     const listHeight = 600;
 
@@ -189,6 +201,29 @@ class CellTile extends React.Component<CellTileProps> {
           }
         }
       </AutoSizer>)
+    : null
+
+    ReactDOM.render(element, document.getElementById('basic-canvas-section')); */
+
+    const {cell} = this.state;
+    const listHeight = 600;
+    let cellTilesData = this.getCellTileDatas();
+    const element = cellTilesData.length > 0
+    ? (
+        <AutoSizer>
+            {() => (
+              <Listw
+                className="List"
+                height={listHeight}
+                itemCount={cellTilesData.length}
+                itemSize={50}
+                width={120}
+              >
+                {this.Row}
+              </Listw>
+            )}
+          </AutoSizer>
+      )
     : null
 
     ReactDOM.render(element, document.getElementById('basic-canvas-section'));
