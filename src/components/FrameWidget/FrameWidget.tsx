@@ -2,11 +2,9 @@ import Canvas from 'react-canvas-wrapper';
 import React from 'react';
 import './FrameWidget.css';
 
-import { FixedSizeList as List } from 'react-window';
-
 import CellWidget from "../CellWidget/CellWidget";
 
-import { AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column } from "react-virtualized";
+import { AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column, Grid } from "react-virtualized";
 import 'react-virtualized/styles.css';
 
 interface FrameWidgetProps {
@@ -59,7 +57,7 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
       );
     };
 
-    listRowRenderer = ({index, style}) => {
+    listRowRenderer = ({columnIndex, key, rowIndex, style}) => {
       const {videoFrame , frameImg, cache, sourceId} = this.props;
 
       let videoFramesData = this.getVideoFrameDatas(videoFrame);
@@ -67,7 +65,7 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
       return (
         <div
           style={style}>
-            <CellWidget key={'videoFrame' + index+'1a'} sourceId={sourceId} sourceImg={frameImg} isBorderNeeded={false} cellData={videoFramesData[index]} />
+            <CellWidget key={'videoFrame' + columnIndex+'1a'} sourceId={sourceId} sourceImg={frameImg} isBorderNeeded={false} cellData={videoFramesData[columnIndex]} />
         </div>
       );
     };
@@ -101,17 +99,16 @@ class FrameWidget extends React.Component<FrameWidgetProps> {
                   ? 
                     <>
                       <h3 className="horizontal-list-label">{'Frame ' + (videoFramesData.length > 0 ? videoFramesData[0].frameIndex : '')}</h3>
-                      <List
+                      <Grid
                           width={cell.width}
                           height={cell.height+10}
-                          itemSize={cell.width}
-                          itemCount={videoFramesData.length}
-                          scrollToAlignment={'start'}
-                          scrollToIndex={locationInfo ? locationInfo.cellIndex : 0}
-                          layout="horizontal"
+                          rowHeight={cache.defaultHeight}
+                          rowCount={1}
+                          columnCount={videoFramesData.length}
+                          columnWidth={cell.width}
+                          cellRenderer={this.listRowRenderer}
                         >
-                          {this.listRowRenderer}
-                      </List>
+                      </Grid>
                     </>
                   : <AutoSizer>
                       {

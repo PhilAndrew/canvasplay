@@ -7,8 +7,7 @@ import { actionTypes } from "../../actions";
 import Canvas from 'react-canvas-wrapper';
 import CellWidget from "../../components/CellWidget/CellWidget";
 
-import { List, AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column } from "react-virtualized";
-import { FixedSizeList as Listw } from "react-window";
+import { List, AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column, Grid } from "react-virtualized";
 
 import 'react-virtualized/styles.css';
 
@@ -55,7 +54,7 @@ class CellTile extends React.Component<CellTileProps> {
   get20KCellData = (cells) => {
     let moreCellData = [];
     let i = 0;
-    while (moreCellData.length < 20000) {
+    while (moreCellData.length < 1333) {
       moreCellData.push(cells[i % cells.length]);
       i++;
     }
@@ -161,12 +160,12 @@ class CellTile extends React.Component<CellTileProps> {
     );
   };
 
-  Row = ({ index, style }) => {
+  Row = ({ columnIndex, key, rowIndex, style }) => {
     let cellTilesData = this.getCellTileDatas();
 
     return (
       <div style={style}>
-        <CellWidget key={'celltile' + index+'1a'} sourceId="celltile-source-canvas" sourceImg={sourceImg} isBorderNeeded={false} cellData={cellTilesData[index]} />
+        <CellWidget key={'celltile' + columnIndex+'1a'} sourceId="celltile-source-canvas" sourceImg={sourceImg} isBorderNeeded={false} cellData={cellTilesData[columnIndex]} />
       </div>
     )
   }
@@ -212,15 +211,17 @@ class CellTile extends React.Component<CellTileProps> {
     ? (
         <AutoSizer>
             {() => (
-              <Listw
+              <Grid
                 className="List"
-                height={listHeight}
-                itemCount={cellTilesData.length}
-                itemSize={50}
-                width={120}
+                height={70}
+                width={520}
+                rowHeight={50}
+                rowCount={1}
+                columnCount={cellTilesData.length}
+                columnWidth={120}
+                cellRenderer={this.Row}
               >
-                {this.Row}
-              </Listw>
+              </Grid>
             )}
           </AutoSizer>
       )
