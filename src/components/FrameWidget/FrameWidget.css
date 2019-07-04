@@ -55,3 +55,15 @@
   padding: 0px 10px;
   margin: 0;
 }
+
+.vertical-list-label {
+  background-image: linear-gradient(#2EE59D, #97cab547);
+  border: 1px solid #97cab547;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 10px;
+  margin: 0;
+}

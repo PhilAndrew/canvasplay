@@ -203,52 +203,25 @@ class CellTile extends React.Component<CellTileProps> {
     sourceImgHandler.src = data.source_image;
   }
 
-  targetColumnCellRenderer = ({dataKey, parent, rowIndex, style}) => {
-    const {cellDatas, frameStore, copiedFrames} = this.state;
-    let frameData = frameStore.filter(o => o.index === 'frame' + cellDatas[rowIndex].frameIndex)[0];
-
-    let isAvailableToCopy = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[rowIndex].frameIndex) });
-    return (
-      <CellMeasurer
-        cache={this.cache}
-        columnIndex={0}
-        key={dataKey}
-        parent={parent}
-        rowIndex={rowIndex}
-        style={style}>
-        <div
-          style={{
-            whiteSpace: 'normal',
-          }}>
-          {
-            isAvailableToCopy < 0
-            ? 'LOADING...'
-            : <CellWidget key={'celltile' + rowIndex+'1a'} sourceId={'s_target_canvas' + cellDatas[rowIndex].frameIndex} sourceImg={frameData.source_image} isBorderNeeded={false} cellData={cellDatas[rowIndex]} />
-          }
-        </div>
-      </CellMeasurer>
-    );
-  };
-
-  rowRenderEvent = ({overscanStartIndex, overscanStopIndex, startIndex, stopIndex}) => {
+  rowRenderEvent = ({rowStartIndex, rowStopIndex}) => {
     const {cellDatas, copiedFrames} = this.state;
     
-    let startFoundIndex = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[startIndex].frameIndex) });
-    let stopFoundIndex = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[stopIndex].frameIndex) });
+    let startFoundIndex = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[rowStartIndex].frameIndex) });
+    let stopFoundIndex = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[rowStopIndex].frameIndex) });
 
     if (startFoundIndex < 0 && stopFoundIndex < 0) {
-      if (cellDatas[startIndex].frameIndex === cellDatas[stopIndex].frameIndex) {
-        this.invokeServer('frame' + cellDatas[startIndex].frameIndex, 'flow' + cellDatas[startIndex].frameIndex)
+      if (cellDatas[rowStartIndex].frameIndex === cellDatas[rowStopIndex].frameIndex) {
+        this.invokeServer('frame' + cellDatas[rowStartIndex].frameIndex, 'flow' + cellDatas[rowStartIndex].frameIndex)
       } else {
-        this.invokeServer('frame' + cellDatas[startIndex].frameIndex, 'flow' + cellDatas[startIndex].frameIndex)
-        this.invokeServer('frame' + cellDatas[stopIndex].frameIndex, 'flow' + cellDatas[stopIndex].frameIndex)
+        this.invokeServer('frame' + cellDatas[rowStartIndex].frameIndex, 'flow' + cellDatas[rowStartIndex].frameIndex)
+        this.invokeServer('frame' + cellDatas[rowStopIndex].frameIndex, 'flow' + cellDatas[rowStopIndex].frameIndex)
       }
     } else {
       if (startFoundIndex < 0) { // not found, require new frame
-        this.invokeServer('frame' + cellDatas[startIndex].frameIndex, 'flow' + cellDatas[startIndex].frameIndex)
+        this.invokeServer('frame' + cellDatas[rowStartIndex].frameIndex, 'flow' + cellDatas[rowStartIndex].frameIndex)
       }
       if (stopFoundIndex < 0) { // not found, require new frame
-        this.invokeServer('frame' + cellDatas[stopIndex].frameIndex, 'flow' + cellDatas[stopIndex].frameIndex)
+        this.invokeServer('frame' + cellDatas[rowStopIndex].frameIndex, 'flow' + cellDatas[rowStopIndex].frameIndex)
       }
     }
   }
@@ -259,7 +232,7 @@ class CellTile extends React.Component<CellTileProps> {
   }
 
   render() {
-    const {sourceFrames, focusedRow, cell, cellDatas} = this.state;
+    const {sourceFrames, focusedRow, cell, cellDatas, copiedFrames} = this.state;
     const listHeight = 600;
     
     return (
@@ -269,11 +242,7 @@ class CellTile extends React.Component<CellTileProps> {
         </h4>
         <div className="source-section">
           <div className="canv-comp">
-            {/* <h5 id="type" className="cell-type">
-              Source Canvas
-            </h5> */}
             <div className="cell-canv-div">
-              {/* <Canvas id="s-video-canvas" ref="s-video-canvas" width={1024} height={1024} /> */}
               {
                 sourceFrames.map((o, i) => {
                   return (<Canvas key={'s_target_canvas' + i} className="s_target_canvas" id={'s_target_canvas' + i} ref="s_target_canvas" width={1024} height={1024} />);
@@ -301,27 +270,36 @@ class CellTile extends React.Component<CellTileProps> {
             ? (<AutoSizer>
                 {
                   () => {
-                  return <Table
-                            width={cell.width}
-                            height={listHeight}
-                            deferredMeasurementCache={this.cache}
-                            headerHeight={20}
-                            rowHeight={this.cache.defaultHeight}
-                            rowCount={cellDatas.length}
-                            rowGetter={({ index }) => cellDatas[index]}
-                            onRowsRendered={this.rowRenderEvent}
-                            scrollToAlignment={'start'}
-                            scrollToIndex={focusedRow}
-                            onScroll={this.onScrollEvent}
-                          >
-                            <Column
-                              width={cell.width}
-                              label='cell_Target Canvas'
-                              dataKey='cell_target_canvas'
-                              style={{margin: '0px'}}
-                              cellRenderer={this.targetColumnCellRenderer}
-                            />
-                          </Table>
+                  return ( <Grid
+                              width={cell.width + 20}
+                              height={listHeight}
+                              rowHeight={this.cache.defaultHeight}
+                              rowCount={cellDatas.length}
+                              columnCount={1}
+                              columnWidth={cell.width}
+                              scrollToAlignment={'start'}
+                              scrollToRow={focusedRow}
+                              onSectionRendered={this.rowRenderEvent}
+                              cellRenderer={({key, parent, rowIndex, style}) => {
+                                const {cellDatas, frameStore, copiedFrames} = this.state;
+                                let frameData = frameStore.filter(o => o.index === 'frame' + cellDatas[rowIndex].frameIndex)[0];
+                            
+                                let isAvailableToCopy = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[rowIndex].frameIndex) });
+                                return (
+                                  <div
+                                    key={key}
+                                    style={style}>
+                                    {
+                                      isAvailableToCopy < 0
+                                      ? 'LOADING...'
+                                      : <CellWidget key={'celltile' + rowIndex+'1a'} sourceId={'s_target_canvas' + cellDatas[rowIndex].frameIndex} sourceImg={frameData.source_image} isBorderNeeded={false} cellData={cellDatas[rowIndex]} />
+                                    }
+                                  </div>
+                                );
+                              }}
+                            >
+                           </Grid>
+                          )
                   }
                 }
               </AutoSizer>)
