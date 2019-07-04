@@ -14,7 +14,7 @@ class Header extends React.Component {
                     <li><Link to='/'>Advanced Canvas Manipulate</Link></li>
                     <li><Link to='/basic'>Basic Canvas Manipulate</Link></li>
                     <li><Link to='/lojban'>Lojban Character</Link></li>
-                    <li><Link to='/celltile'>Cell Tile</Link></li>
+                    <li><Link to='/celltile'>Cell Pagination</Link></li>
                     <li><Link to='/videoframe'>Video Frame</Link></li>
                     <li><Link to='/videoframe2'>Video Frame2</Link></li>
                 </ul>

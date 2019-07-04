@@ -265,7 +265,7 @@ class CellTile extends React.Component<CellTileProps> {
     return (
       <div className="page-body">
         <h4 className="page-title">
-          Cell Tile
+          Cell Pagination
         </h4>
         <div className="source-section">
           <div className="canv-comp">
