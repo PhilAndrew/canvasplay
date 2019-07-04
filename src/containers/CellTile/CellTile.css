@@ -41,6 +41,9 @@
   width: 1024px;
   height: 1024px;
   border: solid #2EE59D;
+  
+  height: 0;
+  overflow: hidden;
 }
 
 .cell-canv-div canvas {
@@ -113,4 +116,10 @@
 
 .basic-canvas-section .ReactVirtualized__Table__rowColumn {
   overflow: hidden !important;
+}
+
+.s_target_canvas {
+  visibility: hidden;
+  position: absolute;
+  left: 30px;
 }

@@ -13,7 +13,13 @@ import 'react-virtualized/styles.css';
 
 import './CellTile.css';
 
-import * as sourceImg from '../../assets/celltile.jpg';
+import {findIndex} from 'lodash';
+
+import * as frame1 from '../../assets/frame1.jpg';
+import * as frame2 from '../../assets/frame2.jpg';
+import * as frame3 from '../../assets/frame3.jpg';
+import * as frame4 from '../../assets/frame4.jpg';
+import * as frame5 from '../../assets/frame5.jpg';
 
 interface CellTileState {
   canvases: string;
@@ -31,6 +37,7 @@ interface CellTileProps {
 class CellTile extends React.Component<CellTileProps> {
   
   private cache: CellMeasurerCache;
+  private rowIndexElement: any;
   
   constructor(props: CellTileProps) {
     super(props);
@@ -40,7 +47,14 @@ class CellTile extends React.Component<CellTileProps> {
       cell: {
         width: 120,
         height: 50
-      }
+      },
+      cellDatas: [],
+      sourceFrames: [frame1, frame2, frame3, frame4, frame5],
+      frameStore: [],
+      copiedFrames: [],
+
+      focusedRow: 0,
+      tempFocusedRow: 0
     };
 
     const {cell} = this.state;
@@ -49,20 +63,84 @@ class CellTile extends React.Component<CellTileProps> {
       fixedWidth: true,
       defaultHeight: cell.height
     })
+
+    this.setupServer();
+    this.initCellDatas();
   }
 
-  get20KCellData = (cells) => {
-    let moreCellData = [];
-    let i = 0;
-    while (moreCellData.length < 1333) {
-      moreCellData.push(cells[i % cells.length]);
-      i++;
+  componentDidMount() {
+    this.invokeServer('frame0', 'flow0');
+    this.forceRender();
+  }
+
+  /* fake server */
+
+  invokeServer = (frameIndex, flowId) => {
+    const { frameStore, copiedFrames } = this.state;
+    let frameData = frameStore.filter(o => o.index === frameIndex)[0];
+    this.drawHiddenSourceCanvas(frameData);
+
+    let tempCopiedFrames = JSON.parse(JSON.stringify(copiedFrames));
+    tempCopiedFrames.push(frameData)
+    this.setState({copiedFrames: tempCopiedFrames});
+  }
+
+  setupServer = () => {
+    let { frameStore, sourceFrames } = this.state;
+
+    for (let i = 0; i < 5; i++) {
+      frameStore.push(
+        {
+          index: 'frame' + i,
+          flow_id: 'flow' + i,
+          target_id: 's_target_canvas' + i,
+          source_image: sourceFrames[i],
+          source_rectangle: {
+            x: 0,
+            y: 0,
+            width: 1000,
+            height: 1000
+          },
+          target_rectangle: {
+            x: 0,
+            y: 0,
+            width: 1000,
+            height: 1000
+          }        
+        }
+      )
     }
-    
-    return moreCellData;
+    this.state = {
+      ...this.state,
+      frameStore
+    }
   }
 
-  generateCells = () => {
+  /* fake server */
+
+  forceRender = () => {
+    setTimeout(() => {
+      this.forceUpdate();
+    }, 300)
+  }
+
+  initCellDatas = () => { // init cell data for all frames
+    let cellDatas = [];
+    let origCells = this.generateCells(0);
+    cellDatas.push(...this.getCellTileDatas(origCells))
+
+    for (let i = 0; i < this.state.sourceFrames.length; i++) {
+      let origCells = this.generateCells(i);
+      cellDatas.push(...this.getCellTileDatas(origCells))
+    }
+
+    this.state = {
+      ...this.state,
+      cellDatas
+    }
+  }
+
+  generateCells = (frameIndex) => {
     const {cell} = this.state;
 
     let cells = [];
@@ -74,8 +152,7 @@ class CellTile extends React.Component<CellTileProps> {
       let tempRows = [];
       for (let j = 0; j < numRows; j++) {
         tempRows.push({
-          id: 'celltarget' + ((i * numRows) + j),
-          index: (i * numRows) + j,
+          frameIndex,
           x: i * cell.width,
           y: j * cell.height,
           width: cell.width,
@@ -84,64 +161,53 @@ class CellTile extends React.Component<CellTileProps> {
       }
       cells.push(tempRows);
     }
-
-    console.log('cells: ', cells);
-
-    cells = this.get20KCellData(cells);
-
-    this.props.setRandomCellTiles(cells);
-
-    setTimeout(() => {
-      this.renderCellTile();
-    }, 100);
-    
+    return cells;
   }
 
-  drawSourceCanvas = (canvas: any) => {
-
-    const node = canvas;
-    const context = node.getContext('2d');
-
-    const pixelRatio = window.devicePixelRatio || 1;
-    const width = 1024 * pixelRatio;
-    const height = 1024 * pixelRatio;
-
-    context.canvas.width = width;
-    context.canvas.height = height;
-
-    let sourceImgHandler = new Image();
-    let self = this;
-    const {source_canvas_cell} = this.props;
-    sourceImgHandler.onload = function () {
-      if (source_canvas_cell) {
-        context.drawImage(sourceImgHandler, 0, 0);
-      }
-    }
-    sourceImgHandler.src = sourceImg;
-  }
-
-  startDrawSourceCanvas = () => {
-    this.setState({drawSource: true});
-    this.props.setSourceCanvasCell('ready to copy');
-  }
-
-  getCellTileDatas = () => {
-    const {cellTiles} = this.props;
+  getCellTileDatas = (cellTiles) => {
     let cellTilesData = [];
-
     for(let i = 0; i < cellTiles.length; i++) {
       for(let j = 0; j < cellTiles[i].length; j++) {
         cellTilesData.push(cellTiles[i][j]);
       }
     }
-
     return cellTilesData;
   }
 
-  targetColumnCellRenderer = ({dataKey, parent, rowIndex, style}) => {
-    const {cellTiles} = this.props;
-    let cellTilesData = this.getCellTileDatas();
+  drawHiddenSourceCanvas = (data) => {
 
+    const hiddenSourceCanvas: any = document.getElementById(data.target_id);
+    const hiddenSourceCanvasContext: any = hiddenSourceCanvas.getContext('2d');
+
+    const pixelRatio = window.devicePixelRatio || 1;
+    const width = 1024 * pixelRatio;
+    const height = 1024 * pixelRatio;
+
+    hiddenSourceCanvasContext.canvas.width = width;
+    hiddenSourceCanvasContext.canvas.height = height;
+
+    let sourceImgHandler = new Image();
+    sourceImgHandler.onload = function () {
+      hiddenSourceCanvasContext.drawImage(
+        sourceImgHandler,
+        data.source_rectangle.x,
+        data.source_rectangle.y,
+        data.source_rectangle.width,
+        data.source_rectangle.height,
+        data.target_rectangle.x,
+        data.target_rectangle.y,
+        data.target_rectangle.width,
+        data.target_rectangle.height,
+      );
+    }
+    sourceImgHandler.src = data.source_image;
+  }
+
+  targetColumnCellRenderer = ({dataKey, parent, rowIndex, style}) => {
+    const {cellDatas, frameStore, copiedFrames} = this.state;
+    let frameData = frameStore.filter(o => o.index === 'frame' + cellDatas[rowIndex].frameIndex)[0];
+
+    let isAvailableToCopy = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[rowIndex].frameIndex) });
     return (
       <CellMeasurer
         cache={this.cache}
@@ -154,113 +220,113 @@ class CellTile extends React.Component<CellTileProps> {
           style={{
             whiteSpace: 'normal',
           }}>
-          <CellWidget key={'celltile' + rowIndex+'1a'} sourceId="celltile-source-canvas" sourceImg={sourceImg} isBorderNeeded={false} cellData={cellTilesData[rowIndex]} />
+          {
+            isAvailableToCopy < 0
+            ? 'LOADING...'
+            : <CellWidget key={'celltile' + rowIndex+'1a'} sourceId={'s_target_canvas' + cellDatas[rowIndex].frameIndex} sourceImg={frameData.source_image} isBorderNeeded={false} cellData={cellDatas[rowIndex]} />
+          }
         </div>
       </CellMeasurer>
     );
   };
 
-  Row = ({ columnIndex, key, rowIndex, style }) => {
-    let cellTilesData = this.getCellTileDatas();
+  rowRenderEvent = ({overscanStartIndex, overscanStopIndex, startIndex, stopIndex}) => {
+    const {cellDatas, copiedFrames} = this.state;
+    
+    let startFoundIndex = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[startIndex].frameIndex) });
+    let stopFoundIndex = findIndex(copiedFrames, (o) => { return o.index === ('frame' + cellDatas[stopIndex].frameIndex) });
 
-    return (
-      <div style={style}>
-        <CellWidget key={'celltile' + columnIndex+'1a'} sourceId="celltile-source-canvas" sourceImg={sourceImg} isBorderNeeded={false} cellData={cellTilesData[columnIndex]} />
-      </div>
-    )
+    if (startFoundIndex < 0 && stopFoundIndex < 0) {
+      if (cellDatas[startIndex].frameIndex === cellDatas[stopIndex].frameIndex) {
+        this.invokeServer('frame' + cellDatas[startIndex].frameIndex, 'flow' + cellDatas[startIndex].frameIndex)
+      } else {
+        this.invokeServer('frame' + cellDatas[startIndex].frameIndex, 'flow' + cellDatas[startIndex].frameIndex)
+        this.invokeServer('frame' + cellDatas[stopIndex].frameIndex, 'flow' + cellDatas[stopIndex].frameIndex)
+      }
+    } else {
+      if (startFoundIndex < 0) { // not found, require new frame
+        this.invokeServer('frame' + cellDatas[startIndex].frameIndex, 'flow' + cellDatas[startIndex].frameIndex)
+      }
+      if (stopFoundIndex < 0) { // not found, require new frame
+        this.invokeServer('frame' + cellDatas[stopIndex].frameIndex, 'flow' + cellDatas[stopIndex].frameIndex)
+      }
+    }
   }
 
-  renderCellTile = () => {
-
-    /* const {cell} = this.state;
-    let cellTilesData = this.getCellTileDatas();
-    const listHeight = 600;
-
-    const element = cellTilesData.length > 0
-    ? (<AutoSizer>
-        {
-          () => {
-          return <Table
-                    width={cell.width}
-                    height={listHeight}
-                    deferredMeasurementCache={this.cache}
-                    headerHeight={20}
-                    rowHeight={this.cache.defaultHeight}
-                    rowCount={cellTilesData.length}
-                    rowGetter={({ index }) => cellTilesData[index]}
-                  >
-                    <Column
-                      width={cell.width}
-                      label='cell_Target Canvas'
-                      dataKey='cell_target_canvas'
-                      style={{margin: '0px'}}
-                      cellRenderer={this.targetColumnCellRenderer}
-                    />
-                  </Table>
-          }
-        }
-      </AutoSizer>)
-    : null
-
-    ReactDOM.render(element, document.getElementById('basic-canvas-section')); */
-
-    const {cell} = this.state;
-    const listHeight = 600;
-    let cellTilesData = this.getCellTileDatas();
-    const element = cellTilesData.length > 0
-    ? (
-        <AutoSizer>
-            {() => (
-              <Grid
-                className="List"
-                height={70}
-                width={520}
-                rowHeight={50}
-                rowCount={1}
-                columnCount={cellTilesData.length}
-                columnWidth={120}
-                cellRenderer={this.Row}
-              >
-              </Grid>
-            )}
-          </AutoSizer>
-      )
-    : null
-
-    ReactDOM.render(element, document.getElementById('basic-canvas-section'));
+  focusRow = () => {
+    this.setState({focusedRow: parseInt(this.rowIndexElement.value)});
+    this.forceRender();
   }
 
   render() {
-    const {source_canvas_cell} = this.props;
+    const {sourceFrames, focusedRow, cell, cellDatas} = this.state;
+    const listHeight = 600;
     
     return (
       <div className="page-body">
         <h4 className="page-title">
-          Cell Tile (20,000 cell)
+          Cell Tile
         </h4>
-        <div className="action-section">
-          <button className="draw-src-canvas" onClick={this.startDrawSourceCanvas}>
-            Draw Source Canvas
-          </button>
-          {
-            source_canvas_cell
-            ? <button className="generate-image-flows" onClick={this.generateCells}>
-                Generate Cells
-              </button>
-            : null
-          }
-        </div>
         <div className="source-section">
           <div className="canv-comp">
-            <h5 id="type" className="cell-type">
+            {/* <h5 id="type" className="cell-type">
               Source Canvas
-            </h5>
+            </h5> */}
             <div className="cell-canv-div">
-              <Canvas id="celltile-source-canvas" ref="celltile-source-canvas" width={1024} height={1024} draw={this.drawSourceCanvas} /> 
+              {/* <Canvas id="s-video-canvas" ref="s-video-canvas" width={1024} height={1024} /> */}
+              {
+                sourceFrames.map((o, i) => {
+                  return (<Canvas key={'s_target_canvas' + i} className="s_target_canvas" id={'s_target_canvas' + i} ref="s_target_canvas" width={1024} height={1024} />);
+                })
+              } 
+            </div>
+          </div>
+        </div>
+        <div className="action-form">
+          <div className="form-row">
+            <div className="form-item">
+              <label>Row Index</label>
+              <input type="number" defaultValue={focusedRow} ref={(rowIndexElement) => { this.rowIndexElement = rowIndexElement }} />
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-item">
+              <button onClick={this.focusRow}>Submit</button>
             </div>
           </div>
         </div>
         <div className="basic-canvas-section" id="basic-canvas-section">
+          {
+            cellDatas.length > 0
+            ? (<AutoSizer>
+                {
+                  () => {
+                  return <Table
+                            width={cell.width}
+                            height={listHeight}
+                            deferredMeasurementCache={this.cache}
+                            headerHeight={20}
+                            rowHeight={this.cache.defaultHeight}
+                            rowCount={cellDatas.length}
+                            rowGetter={({ index }) => cellDatas[index]}
+                            onRowsRendered={this.rowRenderEvent}
+                            scrollToAlignment={'start'}
+                            scrollToIndex={focusedRow}
+                            onScroll={this.onScrollEvent}
+                          >
+                            <Column
+                              width={cell.width}
+                              label='cell_Target Canvas'
+                              dataKey='cell_target_canvas'
+                              style={{margin: '0px'}}
+                              cellRenderer={this.targetColumnCellRenderer}
+                            />
+                          </Table>
+                  }
+                }
+              </AutoSizer>)
+            : null
+          }
         </div>
       </div>
     );
