@@ -131,8 +131,8 @@ p.decode(<binary>);
           canvasObj: self.canvasObj
         });
       };
-        websocket.send ("NXTFR");
-        getPerformance();
+        //websocket.send ("NXTFR");
+        //getPerformance();
     };
     
     // provide size
