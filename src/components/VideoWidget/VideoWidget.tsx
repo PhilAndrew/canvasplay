@@ -61,7 +61,7 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
         this.playerH264 = new Player({
         webgl: true,
         useWorker: true,
-        workerFile: "Broadway/Player/Decoder.js"
+        workerFile: "../../assets/libs/Broadway/Player/Decoder.js"
         });
         //canvas = playerH264.canvas;
         document.getElementById(mainBodyId).appendChild (this.playerH264.canvas).className = videoSourceName;
