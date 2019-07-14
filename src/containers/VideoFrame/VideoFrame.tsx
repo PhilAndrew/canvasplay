@@ -6,6 +6,7 @@ import { actionTypes } from "../../actions";
 import Canvas from 'react-canvas-wrapper';
 
 import FrameWidget from "../../components/FrameWidget/FrameWidget";
+import VideoWidget from "../../components/VideoWidget/VideoWidget";
 
 import { CellMeasurerCache} from "react-virtualized";
 
@@ -56,13 +57,13 @@ class VideoFrame extends React.Component<VideoFrameProps> {
 
     this.initVideoFrameData();
 
-    this.interval = setInterval(()=> {
+    /* this.interval = setInterval(()=> {
       let {frameIndex} = this.state;
       this.drawVideoSourceCanvas(frameIndex);
 
       frameIndex = frameIndex + 1;
       this.setState({frameIndex: frameIndex % 3});
-    }, 1000);
+    }, 1000); */
   }
 
 
@@ -172,8 +173,14 @@ class VideoFrame extends React.Component<VideoFrameProps> {
             <h5 id="type" className="frame-cell-type">
               Source Canvas
             </h5>
-            <div className="frame-cell-canv-div">
-              <Canvas id="videoframe-source-canvas" ref="videoframe-source-canvas" width={1024} height={1024} /> 
+            <div className="frame-cell-canv-div"> 
+              <VideoWidget
+                mainBodyId="vbody1"
+                videoSourceName="videoframe-source-canvas"
+                width={1024}
+                height={1024}
+                wsUrl="ws://45.32.114.244:8090/"
+              />
               {
                 videoFrames.map((o, i) => {
                   return (<Canvas key={'vtempcanv' + i} className="vtemp" id={'vtemp' + i} ref="vtemp" width={1024} height={1024} />);
