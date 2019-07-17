@@ -32,8 +32,9 @@
   justify-content: center;
 }
 
-.vtemp {
+.vf-vtemp {
   visibility: hidden;
   position: absolute;
   left: 30px;
+  transform: scale(1, -1);
 }

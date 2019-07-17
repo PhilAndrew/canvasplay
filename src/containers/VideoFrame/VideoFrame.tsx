@@ -57,13 +57,15 @@ class VideoFrame extends React.Component<VideoFrameProps> {
 
     this.initVideoFrameData();
 
-    /* this.interval = setInterval(()=> {
-      let {frameIndex} = this.state;
-      this.drawVideoSourceCanvas(frameIndex);
+    setTimeout(() => {
+      this.interval = setInterval(()=> {
+        let {frameIndex} = this.state;
+        this.drawTempCanvas(frameIndex);
 
-      frameIndex = frameIndex + 1;
-      this.setState({frameIndex: frameIndex % 3});
-    }, 1000); */
+        frameIndex = frameIndex + 1;
+        this.setState({frameIndex: frameIndex % 3});
+      }, 1000);
+    }, 3000);
   }
 
 
@@ -115,16 +117,20 @@ class VideoFrame extends React.Component<VideoFrameProps> {
   drawTempCanvas = (idx) => {
     const {frameImgs} = this.state;
 
-    const tempCanvas: any = document.getElementById('vtemp' + idx);
-    if (tempCanvas) {
-      const tempContext = tempCanvas.getContext('2d');
+    const width = 1024;
+    const height = 1024;
 
-      let sourceImgHandler = new Image();
-      sourceImgHandler.onload = function () {
-          tempContext.drawImage(sourceImgHandler, 0, 0);
+    const videoCanvas: any = document.getElementById('videoframe-source-canvas');
+    const videoContext = videoCanvas.getContext('2d');
+
+      const tempCanvas: any = document.getElementById('vtemp' + idx);
+      if (tempCanvas) {
+        const tempContext = tempCanvas.getContext('2d');
+        tempContext.save();
+        tempContext.scale(1, -1);
+        tempContext.drawImage(videoCanvas, 0, -1 * height, width, height);
+        tempContext.restore();
       }
-      sourceImgHandler.src = frameImgs[idx];
-    }
   }
 
   drawVideoSourceCanvas = (idx) => {
@@ -183,7 +189,7 @@ class VideoFrame extends React.Component<VideoFrameProps> {
               />
               {
                 videoFrames.map((o, i) => {
-                  return (<Canvas key={'vtempcanv' + i} className="vtemp" id={'vtemp' + i} ref="vtemp" width={1024} height={1024} />);
+                  return (<Canvas key={'vtempcanv' + i} className="vf-vtemp" id={'vtemp' + i} ref="vtemp" width={1024} height={1024} />);
                 })
               } 
             </div>

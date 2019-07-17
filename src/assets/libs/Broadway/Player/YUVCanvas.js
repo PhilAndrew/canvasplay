@@ -537,7 +537,7 @@ YUVCanvas.prototype.drawNextOuptutPictureRGBA = function(width, height, cropping
 
     var argbData = data;
 
-    var ctx = canvas.getContext('2d');
+    /* var ctx = canvas.getContext('2d');
     var imageData = ctx.getImageData(0, 0, width, height);
     imageData.data.set(argbData);
 
@@ -545,7 +545,7 @@ YUVCanvas.prototype.drawNextOuptutPictureRGBA = function(width, height, cropping
         ctx.putImageData(imageData, 0, 0);
     } else {
         ctx.putImageData(imageData, -croppingParams.left, -croppingParams.top, 0, 0, croppingParams.width, croppingParams.height);
-    }
+    } */
 };
   
   return YUVCanvas;

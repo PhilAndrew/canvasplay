@@ -41,7 +41,6 @@ p.decode(<binary>);
 }(this, function (Decoder, WebGLCanvas) {
   "use strict";
   
-  
   var nowValue = Decoder.nowValue;
   
   
@@ -100,9 +99,11 @@ p.decode(<binary>);
     };
     
     
+    
     var lastWidth;
     var lastHeight;
     var onPictureDecoded = function(buffer, width, height, infos) {
+      
 
         //console.log ("onPictureDecoded");
         //console.log (height);
@@ -113,7 +114,6 @@ p.decode(<binary>);
       if (!buffer || !self.render) {
         return;
       };
-              
     
       self.renderFrame({
         canvasObj: self.canvasObj,

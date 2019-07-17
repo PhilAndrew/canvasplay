@@ -10,11 +10,6 @@ interface VideoWidgetProps {
   wsUrl: any;
   width: any;
   height: any;
-
-  h264Compression: boolean;
-  h264MP4Compression: boolean;
-  jpegCompression: boolean;
-  noCompression: boolean;
 }
 
 class VideoWidget extends React.Component<VideoWidgetProps> {
@@ -36,13 +31,8 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
     }
 
     componentDidMount() {
-        this.init();  
-
-        setTimeout(() => {
-            console.log('will start socket.....');
-            this.websocket.send ("STVIS");
-	        // stop = false;
-        }, 2000);
+        this.init();
+        this.initSetSocket();
     }
 
     init = () => {
@@ -59,13 +49,22 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
         }
 
         this.playerH264 = new Player({
-        webgl: true,
+        webgl: false,
         useWorker: true, 
         workerFile: "libs/Broadway/Player/Decoder.js"
         });
-        //canvas = playerH264.canvas;
-        document.getElementById(mainBodyId).appendChild (this.playerH264.canvas).className = videoSourceName;
+
+        let canvasElement = document.getElementById(mainBodyId).appendChild (this.playerH264.canvas)
+        canvasElement.setAttribute("id", videoSourceName);
+        canvasElement.className = videoSourceName;
         this.playerH264.canvas.style = "-moz-transform: scale(-1, 1); -webkit-transform: scale(1, -1); -o-transform: scale(1, -1); transform: scale(1, -1);";  
+    }
+
+    initSetSocket = () => {
+        setTimeout(() => {
+            console.log('will start socket.....');
+            this.websocket.send ("STVIS");
+        }, 2000);
     }
 
     connectAndCallbacks = () => {
@@ -85,41 +84,20 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
 
     decodeH264 = (frame) => {
         let frameArr = new Uint8Array(frame.data);
-        //console.log (decodeH264);
+        
         this.playerH264.decode(frameArr);
+
+        this.websocket.send ("NXTFR");
     }
 
     onOpen = (evt) => {
-        const {h264MP4Compression} = this.props
-
-        if(h264MP4Compression)
-        {
-     // https://stackoverflow.com/a/40238567
-        let playPromise = this.video.play();
-        if ( playPromise !== undefined) {
-                console.log("Got play promise; waiting for fulfilment...");
-                playPromise.then(function() 
-                {
-                    console.log("Play promise fulfilled! Starting playback.");
-                    this.video.connected = true;
-                    //vframe.width = that.width;
-                    //vframe.height = that.height;
-                    this.video.currentTime = 0;
-                }).catch(function(error) {
-                    console.log("Failed to start playback: "+error);
-                });
-            }        
-        }
     }
 
     onClose = (e) => {
-        const {h264MP4Compression} = this.props;
         console.log ("Connection closed", e);
-        if (h264MP4Compression)
-        {
-            this.video.connected = false;
-            this.sourceBuffer.remove(0, 10000000);        
-        }
+        this.initSetSocket();
+        /* this.video.connected = false;
+        this.sourceBuffer.remove(0, 10000000); */
     }
 
     onMessage = (e) => {

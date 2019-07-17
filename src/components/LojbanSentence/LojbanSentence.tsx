@@ -9,6 +9,8 @@ import './LojbanSentence.css';
 
 import LojbanCharacter from "../LojbanCharacter/LojbanCharacter";
 
+import { List, AutoSizer, CellMeasurer, CellMeasurerCache, Table, Column, Grid } from "react-virtualized";
+
 interface LojbanSentenceProps {
   sentence: any;
   borderLength: number;
@@ -20,11 +22,19 @@ interface LojbanSentenceProps {
 }
 
 class LojbanSentence extends React.Component<LojbanSentenceProps> {
+
+  private cache: CellMeasurerCache;
+
     constructor(props: LojbanSentenceProps) {
         super(props);
         this.state = {
             showChangeList: -1
         }
+
+        this.cache = new CellMeasurerCache({
+          fixedWidth: true,
+          defaultWidth: 40
+        })
     }
 
     selectCharacter = (wordIndex, from) => {
@@ -57,42 +67,59 @@ class LojbanSentence extends React.Component<LojbanSentenceProps> {
         const demoChangeListArray = changeList.split(' ');
 
         return (
-            <div style={{'display': 'flex'}}>
+            <div style={{height: (showChangeList !== -1 ? (demoChangeListArray.length + 1) * (borderLength + 9) + 3 * (demoChangeListArray.length + 1) : 80)}}>
               {
-                sentenceArray.map((word, wordIndex) => {
-                  return (
-                    <div
-                      key={'lojban-c-' + wordIndex}
-                      className="lojban-character"
-                      style={{'height': (showChangeList === wordIndex ? (demoChangeListArray.length + 1) * (borderLength + 9) + 3 * (demoChangeListArray.length + 1) : 30) + 'px'}}
-                    >
-                      <div onClick={() => this.selectCharacter(wordIndex, 'self')}>
-                        <LojbanCharacter
-                            key={'col' + wordIndex}
-                            word={word}
-                            borderLength={borderLength}
-                            borderColor={showChangeList === wordIndex ? 'red' : '#2EE59D'}
-                        />
-                      </div>
-                      {
-                          showChangeList === wordIndex
-                          ? demoChangeListArray.map((citem, cIdx) => {
-                                return (
-                                    <div className="lojban-character-container" key={'changelist' + cIdx} onClick={() => this.selectCharacter(cIdx, 'list')}>
-                                        <LojbanCharacter
-                                            key={'change-col' + cIdx}
-                                            word={citem}
-                                            borderLength={borderLength}
-                                            borderColor={'#2EE59D'}
-                                        />
-                                    </div>
-                                )
-                          })
-                          : null
-                      }
-                    </div>
-                  )
-                })
+                sentenceArray.length > 0
+                ? (<AutoSizer>
+                    {
+                      () => {
+                      return ( <Grid
+                                  width={500}
+                                  height={(showChangeList !== -1 ? (demoChangeListArray.length + 1) * (borderLength + 9) + 3 * (demoChangeListArray.length + 1) : 80)}
+                                  rowHeight={(showChangeList !== -1 ? (demoChangeListArray.length + 1) * (borderLength + 9) + 3 * (demoChangeListArray.length + 1) : 80)}
+                                  rowCount={1}
+                                  columnCount={sentenceArray.length}
+                                  columnWidth={this.cache.defaultWidth}
+                                  cellRenderer={({key, parent, columnIndex, style}) => {
+                                    return (
+                                      <div
+                                        key={'lojban-c-' + columnIndex}
+                                        className="lojban-character"
+                                        style={{'height': (showChangeList === columnIndex ? (demoChangeListArray.length + 1) * (borderLength + 9) + 3 * (demoChangeListArray.length + 1) : 30) + 'px'}}
+                                      >
+                                        <div onClick={() => this.selectCharacter(columnIndex, 'self')}>
+                                          <LojbanCharacter
+                                              key={'col' + columnIndex}
+                                              word={sentenceArray[columnIndex]}
+                                              borderLength={borderLength}
+                                              borderColor={showChangeList === columnIndex ? 'red' : '#2EE59D'}
+                                          />
+                                        </div>
+                                        {
+                                            showChangeList === columnIndex
+                                            ? demoChangeListArray.map((citem, cIdx) => {
+                                                  return (
+                                                      <div className="lojban-character-container" key={'changelist' + cIdx} onClick={() => this.selectCharacter(cIdx, 'list')}>
+                                                          <LojbanCharacter
+                                                              key={'change-col' + cIdx}
+                                                              word={citem}
+                                                              borderLength={borderLength}
+                                                              borderColor={'#2EE59D'}
+                                                          />
+                                                      </div>
+                                                  )
+                                            })
+                                            : null
+                                        }
+                                      </div>
+                                    );
+                                  }}
+                                >
+                                </Grid>
+                      )}
+                    }
+                  </AutoSizer>)
+                : null
               }
             </div>
         )
