@@ -11,3 +11,8 @@
   margin-top: 3px;
   margin-bottom: 3px;
 }
+
+.lojban-grid .ReactVirtualized__Grid__innerScrollContainer {
+  display: flex !important;
+  overflow: initial !important;
+}

@@ -80,6 +80,7 @@ class LojbanSentence extends React.Component<LojbanSentenceProps> {
                                   rowCount={1}
                                   columnCount={sentenceArray.length}
                                   columnWidth={this.cache.defaultWidth}
+                                  className="lojban-grid"
                                   cellRenderer={({key, parent, columnIndex, style}) => {
                                     return (
                                       <div
