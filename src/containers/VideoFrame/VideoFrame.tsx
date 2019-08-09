@@ -185,7 +185,7 @@ class VideoFrame extends React.Component<VideoFrameProps> {
                 videoSourceName="videoframe-source-canvas"
                 width={1024}
                 height={1024}
-                wsUrl="ws://45.32.114.244:8090/"
+                wsUrl="ws://localhost:9002/"
               />
               {
                 videoFrames.map((o, i) => {

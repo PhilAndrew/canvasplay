@@ -32,7 +32,6 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
 
     componentDidMount() {
         this.init();
-        this.initSetSocket();
     }
 
     init = () => {
@@ -60,11 +59,14 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
         this.playerH264.canvas.style = "-moz-transform: scale(-1, 1); -webkit-transform: scale(1, -1); -o-transform: scale(1, -1); transform: scale(1, -1);";  
     }
 
+    nextFrame = () => {
+        this.websocket.send ("NXTFR");
+        setTimeout(this.nextFrame, 60);
+    }
+
     initSetSocket = () => {
-        setTimeout(() => {
-            console.log('will start socket.....');
             this.websocket.send ("STVIS");
-        }, 2000);
+            setTimeout(this.nextFrame, 60);
     }
 
     connectAndCallbacks = () => {
@@ -84,13 +86,11 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
 
     decodeH264 = (frame) => {
         let frameArr = new Uint8Array(frame.data);
-        
         this.playerH264.decode(frameArr);
-
-        this.websocket.send ("NXTFR");
     }
 
     onOpen = (evt) => {
+        this.initSetSocket();
     }
 
     onClose = (e) => {
@@ -101,8 +101,13 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
     }
 
     onMessage = (e) => {
-        console.log('e message: ', e);
-        this.decodeH264(e);
+        if ((typeof e.data) == "string") {
+            //console.log(e.data);
+        }
+        else
+            this.decodeH264(e);
+
+        //console.log('e message: ', e);    
     }
 
     onError = (e) => {
