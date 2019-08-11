@@ -9,6 +9,7 @@ import Lojban from "./containers/Lojban/Lojban";
 import CellTile from "./containers/CellTile/CellTile";
 import VideoFrame from "./containers/VideoFrame/VideoFrame";
 import VideoFrame2 from "./containers/VideoFrame2/VideoFrame2";
+import ThreeBrowsers from "./containers/ThreeBrowsers/ThreeBrowsers";
 
 export const App: React.FC<{}> = () => {
   return (
@@ -20,6 +21,7 @@ export const App: React.FC<{}> = () => {
       <Route path="/celltile" exact component={CellTile} />
       <Route path="/videoFrame" exact component={VideoFrame} />
       <Route path="/videoFrame2" exact component={VideoFrame2} />
+        <Route path="/threebrowsers" exact component={ThreeBrowsers} />
     </Router>
   );
 };

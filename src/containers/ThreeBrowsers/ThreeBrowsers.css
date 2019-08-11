@@ -1,0 +1,116 @@
+.page-title {
+    font-size: 24px;
+}
+
+.target-section .canv-comp {
+    display: inline-block;
+}
+
+.action-section {
+    margin-bottom: 30px;
+}
+
+.draw-src-canvas,
+.generate-image-flows {
+    padding: 10px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-right: 20px;
+}
+
+.draw-src-canvas:hover,
+.generate-image-flows:hover {
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+
+.canv-div {
+    width: 90px;
+    height: 157px;
+    border: solid #2EE59D;
+}
+
+.canv-div canvas {
+    width: unset !important;
+    height: unset !important;
+}
+
+h5 {
+    font-size: 16px;
+    margin: 0;
+    width: 90px;
+    padding: 3px;
+    text-align: center;
+    background: #97cab547;
+    margin-bottom: 0;
+}
+
+.canv-comp {
+    margin: 15px;
+}
+
+/*** Overrides for react-virtualized styles ***/
+.ReactVirtualized__Table__Grid {
+    background-color: white;
+    border: 2px solid #97cab547;
+}
+.ReactVirtualized__Table__headerColumn {
+    align-items: center;
+    border-right: 1px solid #97cab547;
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+}
+.ReactVirtualized__Table__headerColumn:last-child {
+    border-right: none;
+}
+.ReactVirtualized__Table__headerRow {
+    background-image: linear-gradient(#2EE59D, #97cab547);
+    border: 1px solid #97cab547;
+    padding-right: 0 !important;
+}
+.ReactVirtualized__Table__row {
+    border-bottom: 1px solid #97cab547;
+    border-left: 1px solid #97cab547;
+}
+.ReactVirtualized__Table__rowColumn {
+    align-items: center;
+    border-right: 1px solid #97cab547;
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+    justify-content: center;
+}
+.ReactVirtualized__Table__rowColumn:last-child {
+    border-right: none;
+}
+
+.copy-btn {
+    cursor: pointer;
+    color: #2EE59D;
+    font-weight: bold;
+}
+
+.empty-target-canvas {
+    height: 175px;
+    width: 10px;
+}
+
+.basic-canvas-manipulate-section .ReactVirtualized__Table__rowColumn {
+    overflow: hidden !important;
+}

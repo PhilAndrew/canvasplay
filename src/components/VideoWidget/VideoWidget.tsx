@@ -13,7 +13,6 @@ interface VideoWidgetProps {
 }
 
 class VideoWidget extends React.Component<VideoWidgetProps> {
-
     reader = new FileReader();
     sourceBuffer = {};
 
@@ -25,6 +24,8 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
     playerH264: any;
 
     websocket: any;
+
+    nextFrameId: any;
 
     constructor(props: VideoWidgetProps) {
         super(props);      
@@ -102,10 +103,12 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
 
     onMessage = (e) => {
         if ((typeof e.data) == "string") {
-            //console.log(e.data);
+            this.nextFrameId = e.data;
         }
-        else
-            this.decodeH264(e);
+        else {
+            if (this.nextFrameId == "2")
+                this.decodeH264(e);
+        }
 
         //console.log('e message: ', e);    
     }
