@@ -4,25 +4,29 @@ import {ImageModel} from "../models/ImageModel";
 
 export class ModelGenerator {
 
-    public generateGraphExample1(): ImageGraphModel {
+    public static generateGraphExample1(): ImageGraphModel {
+
+        var generator = new ModelGenerator();
+
         var result = new ImageGraphModel();
 
         // There is a source canvas, 3 intermediate canvases and lists from those intermediate canvases
 
         // Source canvas
-        var source = new ImageModel(this.generateSourceCanvasRandomId());
+        var source = new ImageModel(generator.generateSourceCanvasRandomId());
 
         // Three intermediate canvases
-        var intermediateCanvas1 = new ImageModel(this.generateIntermediateCanvasRandomId());
-        var intermediateCanvas2 = new ImageModel(this.generateIntermediateCanvasRandomId());
-        var intermediateCanvas3 = new ImageModel(this.generateIntermediateCanvasRandomId());
+        var intermediateCanvas1 = new ImageModel(generator.generateIntermediateCanvasRandomId());
+        var intermediateCanvas2 = new ImageModel(generator.generateIntermediateCanvasRandomId());
+        var intermediateCanvas3 = new ImageModel(generator.generateIntermediateCanvasRandomId());
 
         // Flow mappings
-        var flow1 = ImageFlowModel.build(this.generateFlowMappingId(), source, intermediateCanvas1);
-        var flow2 = ImageFlowModel.build(this.generateFlowMappingId(), source, intermediateCanvas2);
-        var flow3 = ImageFlowModel.build(this.generateFlowMappingId(), source, intermediateCanvas3);
+        var flow1 = ImageFlowModel.build(generator.generateFlowMappingId(), source, intermediateCanvas1);
+        var flow2 = ImageFlowModel.build(generator.generateFlowMappingId(), source, intermediateCanvas2);
+        var flow3 = ImageFlowModel.build(generator.generateFlowMappingId(), source, intermediateCanvas3);
 
-        //var source = new ImageFlowModel(this.generateFlowMappingId(), this.generateSourceCanvasRandomId(), this.generateTargetCanvasRandomId());
+        source.imageFlows = new Array<ImageFlowModel>(flow1, flow2, flow3);
+        result.rootImageModel = source;
 
         return result;
     }
@@ -50,4 +54,5 @@ export class ModelGenerator {
     private generateIntermediateCanvasRandomId(): string {
         return "intermediateCanvas_" + this.generateRandomId();
     }
+
 }

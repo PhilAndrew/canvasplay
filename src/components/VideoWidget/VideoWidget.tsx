@@ -16,6 +16,9 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
     reader = new FileReader();
     sourceBuffer = {};
 
+    framesReceived: number = 0;
+    framesRendered: number = 0;
+
     jpegImg: any;
     ctx: any;
 
@@ -54,6 +57,11 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
         workerFile: "libs/Broadway/Player/Decoder.js"
         });
 
+        this.playerH264.onRenderFrameComplete = (data: any, width: any, height: any, infos: any, canvasObj: any) => {
+            this.framesRendered = this.framesRendered + 1;
+            //console.log("Render frame complete");
+        };
+
         let canvasElement = document.getElementById(mainBodyId).appendChild (this.playerH264.canvas)
         canvasElement.setAttribute("id", videoSourceName);
         canvasElement.className = videoSourceName;
@@ -61,8 +69,11 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
     }
 
     nextFrame = () => {
-        this.websocket.send ("NXTFR");
-        setTimeout(this.nextFrame, 60);
+
+        this.websocket.send ("NXTFR " + this.framesRendered);
+        this.framesRendered = 0;
+        this.framesReceived = 0;
+        setTimeout(this.nextFrame, 1000); // sent once per second to maintain frame pump
     }
 
     initSetSocket = () => {
@@ -106,8 +117,9 @@ class VideoWidget extends React.Component<VideoWidgetProps> {
             this.nextFrameId = e.data;
         }
         else {
-            if (this.nextFrameId == "2")
-                this.decodeH264(e);
+            this.framesReceived = this.framesReceived + 1;
+            //if (this.nextFrameId == "2")
+            this.decodeH264(e);
         }
 
         //console.log('e message: ', e);    
