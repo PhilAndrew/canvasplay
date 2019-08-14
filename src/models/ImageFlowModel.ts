@@ -1,85 +1,43 @@
 import {ImageFlowModelTrait} from "./ImageFlowModelTrait";
 import {ImageModel} from "./ImageModel";
+import {ImageMapping} from "./ImageMapping";
 
 export class ImageFlowModel implements ImageFlowModelTrait {
-
-    static build(id: string, source: ImageModel, target: ImageModel): ImageFlowModel
+    static build(id: string, source: ImageModel, target: ImageModel, fromTo: Array<ImageMapping>): ImageFlowModel
     {
-        const result = new ImageFlowModel(id, source.id, target.id);
+        const result = new ImageFlowModel(id, source.id, target.id, source, target, fromTo);
         return result;
     }
 
-    constructor(id: string, sourceCanvasId: string, targetCanvasId: string) {
+    constructor(id: string, sourceCanvasId: string, targetCanvasId: string, source: ImageModel, target: ImageModel, fromTo: Array<ImageMapping>) {
         this._id = id;
         this._sourceCanvasId = sourceCanvasId;
         this._targetCanvasId = targetCanvasId;
-
-        this._sourceRectTop = 0;
-        this._sourceRectLeft = 0;
-        this._sourceRectWidth = 0;
-        this._sourceRectHeight = 0;
-
-        this._targetRectTop = 0;
-        this._targetRectLeft = 0;
-        this._targetRectWidth = 0;
-        this._targetRectHeight = 0;
+        this._fromToRectangles = fromTo;
+        this._source = source;
+        this._target = target;
     }
 
-    get targetRectHeight(): number {
-        return this._targetRectHeight;
+    get target(): ImageModel {
+        return this._target;
     }
 
-    set targetRectHeight(value: number) {
-        this._targetRectHeight = value;
+    set target(value: ImageModel) {
+        this._target = value;
     }
-    get targetRectWidth(): number {
-        return this._targetRectWidth;
-    }
-
-    set targetRectWidth(value: number) {
-        this._targetRectWidth = value;
-    }
-    get targetRectLeft(): number {
-        return this._targetRectLeft;
+    get source(): ImageModel {
+        return this._source;
     }
 
-    set targetRectLeft(value: number) {
-        this._targetRectLeft = value;
+    set source(value: ImageModel) {
+        this._source = value;
     }
-    get targetRectTop(): number {
-        return this._targetRectTop;
-    }
-
-    set targetRectTop(value: number) {
-        this._targetRectTop = value;
-    }
-    get sourceRectHeight(): number {
-        return this._sourceRectHeight;
+    get fromToRectangles(): Array<ImageMapping> {
+        return this._fromToRectangles;
     }
 
-    set sourceRectHeight(value: number) {
-        this._sourceRectHeight = value;
-    }
-    get sourceRectWidth(): number {
-        return this._sourceRectWidth;
-    }
-
-    set sourceRectWidth(value: number) {
-        this._sourceRectWidth = value;
-    }
-    get sourceRectLeft(): number {
-        return this._sourceRectLeft;
-    }
-
-    set sourceRectLeft(value: number) {
-        this._sourceRectLeft = value;
-    }
-    get sourceRectTop(): number {
-        return this._sourceRectTop;
-    }
-
-    set sourceRectTop(value: number) {
-        this._sourceRectTop = value;
+    set fromToRectangles(value: Array<ImageMapping>) {
+        this._fromToRectangles = value;
     }
 
     get targetCanvasId(): string {
@@ -106,12 +64,7 @@ export class ImageFlowModel implements ImageFlowModelTrait {
     private _id: string; // A unique id which identifies this flow mapping
     private _sourceCanvasId: string; // The id of the canvas element on page which is the source
     private _targetCanvasId: string; // The id of the canvas element on page which is the target
-    private _sourceRectTop: number;
-    private _sourceRectLeft: number;
-    private _sourceRectWidth: number;
-    private _sourceRectHeight: number;
-    private _targetRectTop: number;
-    private _targetRectLeft: number;
-    private _targetRectWidth: number;
-    private _targetRectHeight: number;
+    private _fromToRectangles: Array<ImageMapping>;
+    private _source: ImageModel;
+    private _target: ImageModel;
 }

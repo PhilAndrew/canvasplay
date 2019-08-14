@@ -40,7 +40,7 @@ class BasicCanvasManipulate extends React.Component<BasicCanvasManipulateProps> 
                 <h4 className="page-title">
                     Basic Canvas Manipulate
                 </h4>
-            <CanvasModelWidget  graph={this.props.graph} />
+            <CanvasModelWidget graph={this.props.graph} />
             </div>
         );
     }
