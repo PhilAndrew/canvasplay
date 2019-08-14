@@ -29,7 +29,6 @@ class CanvasModelWidget extends React.Component<CanvasModelWidgetProps> {
         // @todo this
     }
 
-
     render = () => {
         const {graph, dummy} = this.props;
         return (
