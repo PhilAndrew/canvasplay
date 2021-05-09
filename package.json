@@ -9,7 +9,7 @@
     "@types/react-dom": "16.8.4",
     "@types/react-redux": "^7.1.0",
     "@types/react-virtualized": "^9.21.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
     "react-canvas-wrapper": "^0.2.6",
